@@ -1,0 +1,25 @@
+Développer un microservice, c'est souvent jongler : port-forwards, localhost:PORT, /etc/hosts, .env recopié à la main depuis le déploiement… juste pour que son code local parle au reste de la stack.
+
+J'ai écrit plug pour supprimer tout ça.
+
+plug -s my-app:8080:3000 npm run start:dev
+
+Préfixez n'importe quelle commande par plug, et votre process local devient un membre du cluster :
+→ il joint les services du cluster par leur vrai nom (postgres, api, rabbitmq…)
+→ il est lui-même joignable dans le cluster, sous le nom que vous choisissez
+→ si ce service est déjà déployé, plug le met de côté pendant la session, vous passe ses variables d'environnement (secrets compris), puis le remet en place à la sortie
+→ aucun changement de code, aucun proxy : Node, JVM, Python, Go, gRPC, drivers de base de données…
+
+Arrêtez la commande : votre machine est exactement comme avant.
+
+Pourquoi un outil de plus, alors que mirrord et Telepresence existent ? Ils sont centrés sur Kubernetes et demandent à chaque développeur un kubeconfig avec des droits sur le cluster. plug vise autre chose :
+• le même comportement sur Docker, Compose, Swarm et Kubernetes
+• rien à installer à la main : une seule commande ssh, servie par le cluster lui-même
+• nul besoin que le service existe déjà : celui que vous êtes en train d'écrire est joignable par le reste de la stack, sous son futur nom
+
+Linux, macOS et Windows, plusieurs clusters en parallèle, et un serveur MCP pour les agents IA de code.
+
+Le code source est sur GitHub : https://github.com/softwarity/plug
+La doc : https://softwarity.github.io/plug/
+
+#DevOps #Docker #Kubernetes #DeveloperExperience #Microservices

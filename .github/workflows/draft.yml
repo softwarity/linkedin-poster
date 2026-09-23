@@ -1,0 +1,43 @@
+name: Draft
+
+# Sends a post to Slack #linkedin-posts for approval.
+#   gh workflow run draft.yml -f post=posts/plug/intro/fr.txt
+# The image, if any, is the image.{gif,png,jpg} next to the text file.
+on:
+  workflow_dispatch:
+    inputs:
+      post:
+        description: "Text file of the post: posts/<project>/<slug>/<lang>.txt"
+        required: true
+
+env:
+  WORKER_URL: https://linkedin-softwarity-oauth.francois-achache.workers.dev
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Send draft
+        env:
+          POST: ${{ inputs.post }}
+          WORKER_SHARED_SECRET: ${{ secrets.WORKER_SHARED_SECRET }}
+        run: |
+          case "$POST" in posts/*/*/*.txt) ;; *) echo "::error::post must match posts/<project>/<slug>/<lang>.txt"; exit 1 ;; esac
+          test -f "$POST" || { echo "::error::$POST not found"; exit 1; }
+          dir=$(dirname "$POST")
+          project=$(echo "$POST" | cut -d/ -f2)
+          jq -n --rawfile text "$POST" --arg project "$project" '{text: ($text | rtrimstr("\n")), project: $project}' > payload.json
+
+          image=$(ls "$dir"/image.* 2>/dev/null | head -1 || true)
+          if [ -n "$image" ]; then
+            base64 -w0 "$image" > image.b64
+            alt=$(cat "$dir/alt.txt" 2>/dev/null || echo "$project")
+            jq --rawfile data image.b64 --arg type "$(file -b --mime-type "$image")" --arg alt "$alt" \
+              '.image = {data: $data, type: $type, alt: ($alt | rtrimstr("\n"))}' payload.json > p.json && mv p.json payload.json
+          fi
+
+          curl -sS --fail-with-body -X POST "$WORKER_URL/drafts" \
+            -H "Authorization: Bearer $WORKER_SHARED_SECRET" \
+            -H "Content-Type: application/json" \
+            --data-binary @payload.json | jq .

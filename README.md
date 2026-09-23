@@ -17,9 +17,10 @@ Le Worker Cloudflare garde le token LinkedIn et ne le transmet jamais. Il ne pub
 | --- | --- | --- |
 | `GET /authorize` | navigateur | Connexion (ou reconnexion) à LinkedIn |
 | `GET /callback` | LinkedIn | Retour OAuth, enregistre le token |
-| `POST /drafts` | `Authorization: Bearer <WORKER_SHARED_SECRET>` | Envoie un brouillon `{"text": "...", "project": "plug"}` dans Slack |
+| `POST /drafts` | `Authorization: Bearer <WORKER_SHARED_SECRET>` | Envoie un brouillon `{"text", "project", "image": {"data" (base64), "type", "alt"}}` dans Slack |
 | `GET /status` | `Authorization: Bearer <WORKER_SHARED_SECRET>` | État du token (`connected`, `days_left`) |
 | `POST /slack/interactions` | Slack (requête signée) | Boutons Publier / Rejeter |
+| `GET /media/<id>` | public (id non devinable) | Image d'un brouillon, pour l'aperçu Slack |
 
 Seuls les utilisateurs Slack listés dans `SLACK_APPROVERS` (`wrangler.toml`) peuvent publier.
 
@@ -52,7 +53,7 @@ npx wrangler secret put SLACK_SIGNING_SECRET     # app Slack → Basic Informati
 openssl rand -hex 32 | tee /dev/stderr | npx wrangler secret put WORKER_SHARED_SECRET
 ```
 
-Garder `WORKER_SHARED_SECRET` dans le coffre de mots de passe : c'est lui qui permet d'envoyer des brouillons.
+Garder `WORKER_SHARED_SECRET` dans le coffre de mots de passe, et le copier aussi dans les secrets du dépôt GitHub (`gh secret set WORKER_SHARED_SECRET`) : c'est lui qui permet d'envoyer des brouillons.
 
 ### 4. Déploiement
 
@@ -63,16 +64,15 @@ Garder `WORKER_SHARED_SECRET` dans le coffre de mots de passe : c'est lui qui pe
 
 Ouvrir `<WORKER_URL>/authorize` et accepter. Le premier compte LinkedIn connecté devient le propriétaire : aucun autre compte ne pourra ensuite prendre sa place. Pour changer de propriétaire, supprimer la clé `owner_sub` du KV `linkedin-softwarity-tokens`.
 
-## Tester
+## Envoyer un brouillon
+
+Un post est un fichier texte, rangé dans `posts/<projet>/<sujet>/<langue>.txt`. Il peut être accompagné d'une image : `image.gif`, `image.png` ou `image.jpg`, avec sa description (texte alternatif) dans `alt.txt`, dans le même dossier. On le pousse sur `main`, puis :
 
 ```bash
-curl -X POST "$WORKER_URL/drafts" \
-  -H "Authorization: Bearer $WORKER_SHARED_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{"project": "plug", "text": "Test de publication #plug"}'
+gh workflow run draft.yml -f post=posts/plug/intro/fr.txt
 ```
 
-Le brouillon apparaît dans `#linkedin-posts`. `npm run logs` affiche les logs du Worker en direct.
+Le job lit `WORKER_SHARED_SECRET` dans les secrets du dépôt : personne n'a à le saisir. Le brouillon arrive dans `#linkedin-posts`, avec l'image en aperçu, et attend ta validation. `npm run logs` affiche les logs du Worker en direct.
 
 ## Maintenance
 

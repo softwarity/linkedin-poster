@@ -6,8 +6,11 @@ const LI_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization";
 const LI_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken";
 const LI_USERINFO_URL = "https://api.linkedin.com/v2/userinfo";
 const LI_POSTS_URL = "https://api.linkedin.com/rest/posts";
+const LI_IMAGES_URL = "https://api.linkedin.com/rest/images";
 const LI_SCOPES = "openid profile w_member_social"; // openid/profile: needed to know the author URN
 const LI_MAX_LENGTH = 3000;
+const IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif"];
+const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 
 const KEY_TOKEN = "linkedin_token";
 const KEY_OWNER = "owner_sub"; // first account connected; later connections must match it
@@ -32,6 +35,8 @@ export default {
         case "POST /slack/interactions":
           return await slackInteraction(request, env, ctx);
         default:
+          // Draft image, public so Slack can preview it; the id is an unguessable UUID.
+          if (request.method === "GET" && url.pathname.startsWith("/media/")) return await media(url.pathname.slice(7), env);
           return json({ error: "not_found" }, 404);
       }
     } catch (err) {
@@ -113,11 +118,19 @@ async function tokenStatus(env) {
 // ---------- Drafts & Slack approval ----------
 
 async function createDraft(request, env) {
-  const { text, project } = await request.json().catch(() => ({}));
+  const { text, project, image } = await request.json().catch(() => ({}));
   if (typeof text !== "string" || !text.trim()) return json({ error: "text_required" }, 400);
   if (text.length > LI_MAX_LENGTH) return json({ error: "text_too_long", max: LI_MAX_LENGTH }, 400);
 
   const draft = { id: crypto.randomUUID(), text, project: project || null, status: "pending", created_at: new Date().toISOString() };
+  if (image) {
+    // image: { data: base64, type: "image/gif" | "image/png" | "image/jpeg", alt?: string }
+    if (!IMAGE_TYPES.includes(image.type)) return json({ error: "image_type_unsupported", allowed: IMAGE_TYPES }, 400);
+    const bytes = Uint8Array.from(atob(image.data || ""), (c) => c.charCodeAt(0));
+    if (!bytes.length || bytes.length > IMAGE_MAX_BYTES) return json({ error: "image_size_invalid", max: IMAGE_MAX_BYTES }, 400);
+    await env.TOKENS.put(`media:${draft.id}`, bytes, { expirationTtl: DRAFT_TTL, metadata: { type: image.type } });
+    draft.image = { url: `${new URL(request.url).origin}/media/${draft.id}`, alt: image.alt || draft.project || "image" };
+  }
   await saveDraft(env, draft);
   const res = await slackApi(env, "chat.postMessage", {
     channel: env.SLACK_CHANNEL_ID,
@@ -161,7 +174,7 @@ async function handleAction(env, action, payload) {
     Object.assign(draft, { status: "publishing", decided_by: user });
     await saveDraft(env, draft);
     try {
-      draft.post_url = await publishOnLinkedIn(env, draft.text);
+      draft.post_url = await publishOnLinkedIn(env, draft);
       draft.status = "published";
     } catch (err) {
       draft.status = "pending"; // allow a retry once the cause is fixed
@@ -178,6 +191,7 @@ function draftBlocks(draft, outcome) {
     { type: "header", text: { type: "plain_text", text: `Brouillon LinkedIn${draft.project ? ` — ${draft.project}` : ""}` } },
     { type: "section", text: { type: "plain_text", text: draft.text, emoji: true } },
   ];
+  if (draft.image) blocks.push({ type: "image", image_url: draft.image.url, alt_text: draft.image.alt });
   if (outcome) {
     blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: outcome }] });
   } else {
@@ -215,36 +229,69 @@ async function loadDraft(env, id) {
 
 // ---------- LinkedIn publishing ----------
 
-async function publishOnLinkedIn(env, text) {
+async function publishOnLinkedIn(env, draft) {
   const raw = await env.TOKENS.get(KEY_TOKEN);
   if (!raw) throw new Error("pas de token LinkedIn, reconnecte-toi via /authorize");
   const { access_token, person_urn } = JSON.parse(raw);
+  const headers = {
+    Authorization: `Bearer ${access_token}`,
+    "LinkedIn-Version": env.LINKEDIN_VERSION,
+    "X-Restli-Protocol-Version": "2.0.0",
+    "Content-Type": "application/json",
+  };
 
-  const res = await fetch(LI_POSTS_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${access_token}`,
-      "LinkedIn-Version": env.LINKEDIN_VERSION,
-      "X-Restli-Protocol-Version": "2.0.0",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      author: person_urn,
-      commentary: toLittleText(text),
-      visibility: "PUBLIC",
-      distribution: { feedDistribution: "MAIN_FEED", targetEntities: [], thirdPartyDistributionChannels: [] },
-      lifecycleState: "PUBLISHED",
-      isReshareDisabledByAuthor: false,
-    }),
-  });
+  const post = {
+    author: person_urn,
+    commentary: toLittleText(draft.text),
+    visibility: "PUBLIC",
+    distribution: { feedDistribution: "MAIN_FEED", targetEntities: [], thirdPartyDistributionChannels: [] },
+    lifecycleState: "PUBLISHED",
+    isReshareDisabledByAuthor: false,
+  };
+  if (draft.image) {
+    const id = await uploadImage(env, headers, person_urn, draft.id);
+    post.content = { media: { id, altText: draft.image.alt } };
+  }
+
+  const res = await fetch(LI_POSTS_URL, { method: "POST", headers, body: JSON.stringify(post) });
   if (res.status !== 201) throw new Error(`LinkedIn ${res.status} : ${await res.text()}`);
   return `https://www.linkedin.com/feed/update/${res.headers.get("x-restli-id")}/`;
+}
+
+async function uploadImage(env, headers, owner, draftId) {
+  const bytes = await env.TOKENS.get(`media:${draftId}`, "arrayBuffer");
+  if (!bytes) throw new Error("image du brouillon expirée");
+
+  const init = await fetch(`${LI_IMAGES_URL}?action=initializeUpload`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ initializeUploadRequest: { owner } }),
+  });
+  if (!init.ok) throw new Error(`LinkedIn images ${init.status} : ${await init.text()}`);
+  const { value } = await init.json();
+
+  const up = await fetch(value.uploadUrl, { method: "PUT", headers: { Authorization: headers.Authorization }, body: bytes });
+  if (!up.ok) throw new Error(`LinkedIn upload ${up.status} : ${await up.text()}`);
+
+  // GIFs are processed asynchronously: wait until the image is usable (a few seconds at most).
+  for (let i = 0; i < 15; i++) {
+    const res = await fetch(`${LI_IMAGES_URL}/${encodeURIComponent(value.image)}`, { headers });
+    if (res.ok && (await res.json()).status === "AVAILABLE") break;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  return value.image;
 }
 
 // LinkedIn "little text": reserved characters must be escaped or the post gets truncated.
 // A "#" directly followed by a word stays a hashtag.
 function toLittleText(text) {
   return text.replace(/[\\|{}@\[\]()<>*_~]/g, "\\$&").replace(/#(?![\p{L}\p{N}])/gu, "\\#");
+}
+
+async function media(id, env) {
+  const { value, metadata } = await env.TOKENS.getWithMetadata(`media:${id}`, "arrayBuffer");
+  if (!value) return json({ error: "not_found" }, 404);
+  return new Response(value, { headers: { "Content-Type": metadata.type, "Cache-Control": "private, max-age=3600" } });
 }
 
 // ---------- Token expiry reminder (cron) ----------
