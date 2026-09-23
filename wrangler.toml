@@ -1,0 +1,17 @@
+name = "linkedin-softwarity-oauth"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "TOKENS"
+id = "043324aa096d40c9b7dc6e506295fc15"
+
+# Daily check of the LinkedIn token expiry (08:00 UTC)
+[triggers]
+crons = ["0 8 * * *"]
+
+# Public configuration — secrets are set with `wrangler secret put`
+[vars]
+SLACK_CHANNEL_ID = "C0C3YRPB2Q6"   # #linkedin-posts
+SLACK_APPROVERS = "U0C4PPMKQ1E"    # Slack user ids allowed to publish (comma-separated)
+LINKEDIN_VERSION = "202609"        # LinkedIn API version (YYYYMM), supported ~1 year
