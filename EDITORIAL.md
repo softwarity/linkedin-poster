@@ -27,7 +27,43 @@ Ne rien affirmer qui ne figure pas dans ces sources publiques : pas de chiffres,
 
 Si le site de Meerkat est injoignable, traiter un nouveau sujet plug à la place.
 
-Pistes de sujets pour plug, un angle par post : reprendre un service déjà déployé (mis de côté puis restauré) en héritant de ses variables d'environnement ; le port local choisi automatiquement, pour deux branches côte à côte ; plusieurs clusters en parallèle ; le serveur MCP pour les agents IA de code ; l'installation en une commande ssh servie par le cluster ; Swarm sans modification du réseau ; Windows. Les sujets déjà traités sont dans `posts/`.
+Pistes de cas d'usage pour plug, un par post :
+- ouvrir une base du cluster (MongoDB, Postgres…) avec un outil graphique (Compass, DBeaver) sans exposer de port (`plug -c`) ;
+- développer un service déjà déployé : plug met la version déployée de côté, votre process local prend sa place et hérite de ses variables d'environnement (`plug -s`) ;
+- faire tourner deux branches du même service côte à côte, avec un port local choisi automatiquement ;
+- tester une image Docker comme membre du cluster avant de la déployer (`--dockerrun`) ;
+- lancer un script ponctuel avec les identifiants d'un service (`--env-of`) ;
+- travailler sur plusieurs clusters en parallèle (prod et staging) ;
+- laisser un agent IA de code interroger le cluster (`plug mcp`).
+
+Les sujets déjà traités sont dans `posts/`.
+
+## Format d'un post : le projet en bref, puis un cas d'usage
+
+Chaque post suit ce schéma :
+
+1. **Le projet en une ou deux lignes** : ce que c'est, pour qui.
+2. **Un cas d'usage concret**, raconté comme une situation vécue :
+   - la situation (« J'ai mon cluster avec MongoDB dedans… ») ;
+   - le blocage (« …et aucun port exposé pour m'y connecter. ») ;
+   - la commande, **exacte**, vérifiée dans la doc, sur sa propre ligne ;
+   - le résultat (« Compass tourne sur mon Mac, mais il est vu comme à l'intérieur du cluster, et il atteint la base par son nom. »).
+3. Les liens, puis les hashtags.
+
+Un seul cas d'usage par post. Le lecteur doit pouvoir se dire « ça, c'est moi », puis copier la commande.
+
+Exemple de référence, pour plug :
+
+> plug fait tourner un process local comme s'il était dans votre cluster Docker, Swarm ou Kubernetes.
+>
+> Cas vécu : mon cluster contient un MongoDB, mais aucun port n'est exposé. Pour l'explorer avec Compass, il faudrait un port-forward, ou modifier la stack.
+>
+> Avec plug, sur mon Mac :
+> plug -c "/Applications/MongoDB Compass.app/Contents/MacOS/MongoDB Compass"
+>
+> Compass se connecte à mongodb:27017, par son nom, comme n'importe quel service du cluster. Je ferme Compass : tout est comme avant.
+
+Une commande doit être exacte au caractère près : la tirer de la doc, jamais de mémoire. Exemple de piège : `plug -c open -a Compass` ne fonctionne pas, car `open` rend la main aussitôt et plug ferme la session. Il faut donner à plug l'exécutable lui-même.
 
 ## Style
 
