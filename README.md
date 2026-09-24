@@ -66,13 +66,21 @@ Ouvrir `<WORKER_URL>/authorize` et accepter. Le premier compte LinkedIn connect�
 
 ## Envoyer un brouillon
 
-Un post est un fichier texte, rangé dans `posts/<projet>/<sujet>/<langue>.txt`. Il peut être accompagné d'une image : `image.gif`, `image.png` ou `image.jpg`, avec sa description (texte alternatif) dans `alt.txt`, dans le même dossier. On le pousse sur `main`, puis :
+Un post est un fichier texte, rangé dans `posts/<projet>/<sujet>/<langue>.txt` (`fr.txt`, `en.txt`, `he.txt`…). Il peut être accompagné d'une image, `image.gif`, `image.png` ou `image.jpg`, avec sa description dans `alt.txt`, dans le même dossier.
+
+**Pousser un nouveau fichier de post sur `main` suffit** : le job `draft` l'envoie dans `#linkedin-posts` avec l'image en aperçu, puis attend ta validation. Modifier un post déjà envoyé ne le renvoie pas. ⚠️ Pas de `[skip ci]` sur ces commits : il bloquerait l'envoi.
+
+Pour renvoyer un post à la main :
 
 ```bash
 gh workflow run draft.yml -f post=posts/plug/intro/fr.txt
 ```
 
-Le job lit `WORKER_SHARED_SECRET` dans les secrets du dépôt : personne n'a à le saisir. Le brouillon arrive dans `#linkedin-posts`, avec l'image en aperçu, et attend ta validation. `npm run logs` affiche les logs du Worker en direct.
+Le job lit `WORKER_SHARED_SECRET` dans les secrets du dépôt : personne n'a à le saisir. `npm run logs` affiche les logs du Worker en direct.
+
+## Rédaction automatique
+
+Une tâche Claude programmée (routine cloud) écrit un post **le mardi et le jeudi à 8 h**, heure de Paris, et le pousse. Tu n'as plus qu'à le valider dans Slack. Ses consignes sont dans [`EDITORIAL.md`](EDITORIAL.md) : sujets, rotation des langues, ton, sources autorisées.
 
 ## Maintenance
 
