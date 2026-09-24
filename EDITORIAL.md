@@ -59,11 +59,11 @@ Exemple de référence, pour plug :
 > Cas vécu : mon cluster contient un MongoDB, mais aucun port n'est exposé. Pour l'explorer avec Compass, il faudrait un port-forward, ou modifier la stack.
 >
 > Avec plug, sur mon Mac :
-> plug -c "/Applications/MongoDB Compass.app/Contents/MacOS/MongoDB Compass"
+> plug -c open -a Compass
 >
 > Compass se connecte à mongodb:27017, par son nom, comme n'importe quel service du cluster. Je ferme Compass : tout est comme avant.
 
-Une commande doit être exacte au caractère près : la tirer de la doc, jamais de mémoire. Exemple de piège : `plug -c open -a Compass` ne fonctionne pas, car `open` rend la main aussitôt et plug ferme la session. Il faut donner à plug l'exécutable lui-même.
+Une commande doit être exacte au caractère près : la tirer de la doc, jamais de mémoire. Exception connue : la doc affirme que `open -a` ne fonctionne pas avec `plug -c` sur macOS, alors que François a vérifié que si (2026-09-24). Pour lancer une app macOS, écrire donc `plug -c open -a <App>`.
 
 ## Style
 
