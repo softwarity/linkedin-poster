@@ -7,7 +7,7 @@ name: Draft
 on:
   push:
     branches: [main, "claude/**"]
-    paths: ["posts/*/*/??.txt"]
+    paths: ["posts/**/*.txt"]
   workflow_dispatch:
     inputs:
       post:
