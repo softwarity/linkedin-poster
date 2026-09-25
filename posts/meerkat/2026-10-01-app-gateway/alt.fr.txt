@@ -1,0 +1,1 @@
+Animation : d'abord la pile assemblée pour une application interne (API gateway, proxy d'authentification, identité, coffre, certificats, supervision, audit, environ 38 pods), puis une seule porte, Meerkat, qui prend tout en charge et transmet aux services un JWT signé.

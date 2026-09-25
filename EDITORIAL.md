@@ -16,16 +16,14 @@ done | sort -u
 ```
 
 - Si le sujet le plus récent (celui dont le `fr.txt` a été ajouté en dernier : `git log --diff-filter=A --format=%as -- <fichier>`) n'a pas encore son `en.txt`, écrire `en.txt`. S'il a son `en.txt` mais pas son `he.txt`, écrire `he.txt`.
-- Sinon, commencer un nouveau sujet en `fr`, sur l'autre projet que le dernier sujet, dans `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
+- Sinon, commencer un nouveau sujet en `fr`, sur l'autre projet que le dernier sujet. **Si un sujet planifié attend pour ce projet** (un dossier qui contient un `brief.md` mais pas de `fr.txt`), le traiter en priorité, le plus ancien d'abord : écrire son `fr.txt` en suivant le brief, qui prime sur les consignes générales. Sans sujet planifié, créer `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
 
 ## Projets et sources autorisées
 
 Ne rien affirmer qui ne figure pas dans ces sources publiques : pas de chiffres, de clients, de benchmarks ni de fonctionnalités inventés.
 
 - **plug** : https://github.com/softwarity/plug (README) et https://softwarity.github.io/plug/, y compris sa page de comparaison. Liens à mettre dans le post : le dépôt GitHub et la doc. Pour la licence, écrire « le code source est sur GitHub », **jamais « open source »** (plug est sous licence FSL).
-- **Meerkat** : **uniquement** https://www.softwarity.io/. Le dépôt de Meerkat est privé : même s'il est accessible, n'en rien citer. Le produit est en construction : ne présenter que ce que le site donne comme disponible. Lien à mettre dans le post : www.softwarity.io.
-
-Si le site de Meerkat est injoignable, traiter un nouveau sujet plug à la place.
+- **Meerkat** : **uniquement** le dépôt public https://github.com/softwarity/meerkat-ce, et dans ce dépôt, les sources du site `docs/content/fr/**` et `docs/content/en/**`, plus le `README.md`. Le site https://www.softwarity.io est une application monopage : un WebFetch n'y voit que le titre, il faut donc lire ces sources. Ne rien tirer d'un autre dépôt (le dépôt `meerkat` est privé), ni des autres fichiers de `meerkat-ce` (`FEATURES.md`, `memory.md`, `CLAUDE.md`…), qui sont des notes de travail. Le produit est en construction : ne présenter que ce que le site donne comme livré. Lien à mettre dans le post : https://www.softwarity.io.
 
 Pistes de cas d'usage pour plug, un par post :
 - ouvrir une base du cluster (MongoDB, Postgres…) avec un outil graphique (Compass, DBeaver) sans exposer de port (`plug -c`) ;
@@ -79,13 +77,14 @@ Une commande doit être exacte au caractère près : la tirer de la doc, jamais 
 
 ## Image
 
-- Une traduction réutilise l'`image.*` de son dossier : écrire seulement `alt.<langue>.txt`, la description de l'image dans la langue du post.
+- Une traduction réutilise l'image de son dossier : `image.<langue>.*` s'il existe (image dont le texte est dans cette langue), sinon `image.*`. Écrire seulement `alt.<langue>.txt`, la description de l'image dans la langue du post.
 - Un nouveau sujet peut avoir une image, facultative : `image.png`, `image.gif` ou `image.jpg`, 8 Mo au plus, prise sur les sources publiques ci-dessus. Écrire alors `alt.fr.txt`. Ne jamais fabriquer de capture d'écran ; sans image pertinente, publier le texte seul.
 
 ## Livraison
 
+- Commiter sous l'identité de François : `git config user.name hhfrancois` et `git config user.email francois.achache@gmail.com`.
 - Un commit par passage, avec pour message `post: <projet>/<sujet> (<langue>)`.
 - **Jamais de `[skip ci]`** : c'est le push qui envoie le brouillon dans Slack.
 - Jamais de trailer `Co-Authored-By` mentionnant Claude ou Anthropic.
 - Pousser sur `main`. Si c'est refusé, pousser sur une branche `claude/linkedin-<AAAA-MM-JJ>` : le brouillon part aussi.
-- Ne modifier aucun fichier en dehors de `posts/`.
+- Ne modifier aucun fichier en dehors de `posts/`, et ne jamais modifier un `brief.md`.

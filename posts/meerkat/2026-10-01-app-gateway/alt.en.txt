@@ -1,0 +1,1 @@
+Animation: first the stack assembled for an internal application (API gateway, auth proxy, identity, vault, certificates, monitoring, audit, about 38 pods), then a single door, Meerkat, which handles it all and hands the services a signed JWT.
