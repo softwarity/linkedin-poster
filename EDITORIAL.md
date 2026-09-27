@@ -1,10 +1,10 @@
 # Ligne éditoriale LinkedIn
 
-Consignes de la tâche qui rédige les posts du profil de François Achache, sous la marque Softwarity. Chaque post passe par la validation de François dans Slack avant publication.
+Consignes de la tâche qui rédige les posts du profil de François Achache, sous la marque Softwarity. François valide la version française de chaque sujet dans Slack ; les traductions de ce sujet sont ensuite publiées sans nouvelle validation. Personne ne les relit : elles doivent être irréprochables.
 
 ## Rythme et rotation
 
-Un passage le mardi et le jeudi, **un seul post par passage**. Chaque sujet sort en trois langues, une par passage, dans cet ordre : `fr`, puis `en`, puis `he`. Ensuite, un nouveau sujet commence, et le projet alterne à chaque nouveau sujet : plug, puis Meerkat, puis plug…
+Un passage chaque jour du lundi au vendredi, **un seul post par passage**. Un sujet par semaine, qui sort en cinq langues, une par jour, dans cet ordre : `fr` (lundi), `en`, `es`, `pt`, `de` (vendredi). Le projet alterne à chaque nouveau sujet : plug, puis Meerkat, puis plug…
 
 Pour savoir quoi écrire, on lit l'état du dépôt (en incluant les branches `claude/*`, où un passage précédent a pu pousser) :
 
@@ -15,8 +15,9 @@ for ref in HEAD $(git for-each-ref --format='%(refname)' refs/remotes/origin/cla
 done | sort -u
 ```
 
-- Si le sujet le plus récent (celui dont le `fr.txt` a été ajouté en dernier : `git log --diff-filter=A --format=%as -- <fichier>`) n'a pas encore son `en.txt`, écrire `en.txt`. S'il a son `en.txt` mais pas son `he.txt`, écrire `he.txt`.
-- Sinon, commencer un nouveau sujet en `fr`, sur l'autre projet que le dernier sujet. **Si un sujet planifié attend pour ce projet** (un dossier qui contient un `brief.md` mais pas de `fr.txt`), le traiter en priorité, le plus ancien d'abord : écrire son `fr.txt` en suivant le brief, qui prime sur les consignes générales. Sans sujet planifié, créer `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
+- Si le sujet le plus récent (celui dont le `fr.txt` a été ajouté en dernier : `git log --diff-filter=A --format=%as -- <fichier>`) n'a pas toutes ses langues, écrire la première qui manque dans l'ordre `en`, `es`, `pt`, `de`. Toujours finir un sujet avant d'en commencer un autre.
+- Si le sujet le plus récent est complet et que l'on **n'est pas lundi**, ne rien écrire : terminer sans commit, en le disant dans le résumé. Un nouveau sujet ne commence que le lundi.
+- Si l'on est lundi, commencer un nouveau sujet en `fr`, sur l'autre projet que le dernier sujet. **Si un sujet planifié attend pour ce projet** (un dossier qui contient un `brief.md` mais pas de `fr.txt`), le traiter en priorité, le plus ancien d'abord : écrire son `fr.txt` en suivant le brief, qui prime sur les consignes générales. Sans sujet planifié, créer `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
 
 ## Projets et sources autorisées
 
@@ -72,8 +73,9 @@ Une commande doit être exacte au caractère près : la tirer de la doc, jamais 
 - Viser 900 à 1 800 caractères, sans jamais dépasser 3 000.
 - Écrire en texte brut, car LinkedIn n'interprète pas le Markdown. Utiliser → et • pour les listes, et mettre les commandes sur une ligne à part.
 - Terminer par 3 à 5 hashtags en anglais.
-- Pour `en` et `he`, adapter le post plutôt que le traduire mot à mot : garder le fond, retravailler l'accroche.
-- Pour `he`, écrire un hébreu naturel. Laisser en caractères latins les commandes, les noms de produits et les termes techniques usuels (Kubernetes, Docker, CLI…), et garder chaque commande sur sa propre ligne pour ne pas casser l'affichage de droite à gauche.
+- Pour les traductions, adapter le post plutôt que le traduire mot à mot : garder le fond et les faits, retravailler l'accroche pour qu'elle sonne naturelle.
+- Écrire dans la variante qui porte le plus loin : `es` en espagnol neutre, compris en Espagne comme en Amérique latine ; `pt` en portugais du Brésil ; `de` en allemand, en vouvoyant (« Sie »). Laisser tels quels les commandes, les noms de produits et les termes techniques que les développeurs de ce pays emploient en anglais (Kubernetes, Docker, gateway, CLI…).
+- Relire chaque traduction comme un locuteur natif : orthographe, accents, accords, tournures. Aucune relecture humaine n'aura lieu.
 
 ## Image
 

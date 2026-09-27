@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 python3 make-svg.py
-for lang in fr en; do
+for lang in fr en es pt de; do
   docker run --rm -v "$PWD:/work" -w /work mcr.microsoft.com/playwright:v1.61.1-noble \
     sh -c "npm i --no-save --silent playwright@1.61.1 >/dev/null 2>&1 && node render.mjs app-gateway.$lang.svg .frames-$lang"
   # Two-pass palette: sharp text, small file (LinkedIn accepts up to 250 frames).

@@ -1,6 +1,6 @@
 # linkedin-poster
 
-Publie des posts sur le profil LinkedIn personnel de François Achache pour faire connaître les projets Softwarity (plug, Meerkat, Halcyon…), **après validation dans Slack**.
+Publie des posts sur le profil LinkedIn personnel de François Achache pour faire connaître les projets Softwarity (plug, Meerkat, Halcyon…), **après validation dans Slack**. Une validation couvre un sujet : ses traductions partent ensuite seules.
 
 ```
 Tâche Claude hebdo ──POST /drafts──▶ Worker ──▶ Slack #linkedin-posts  [Publier] [Rejeter]
@@ -66,7 +66,7 @@ Ouvrir `<WORKER_URL>/authorize` et accepter. Le premier compte LinkedIn connect�
 
 ## Envoyer un brouillon
 
-Un post est un fichier texte, rangé dans `posts/<projet>/<sujet>/<langue>.txt` (`fr.txt`, `en.txt`, `he.txt`…). Il peut être accompagné d'une image, `image.gif`, `image.png` ou `image.jpg`, avec sa description dans `alt.txt`, dans le même dossier.
+Un post est un fichier texte, rangé dans `posts/<projet>/<sujet>/<langue>.txt` (`fr.txt`, `en.txt`, `es.txt`, `pt.txt`, `de.txt`). Il peut être accompagné d'une image, `image.gif`, `image.png` ou `image.jpg`, avec sa description dans `alt.txt`, dans le même dossier.
 
 **Pousser un nouveau fichier de post sur `main` suffit** : le job `draft` l'envoie dans `#linkedin-posts` avec l'image en aperçu, puis attend ta validation. Modifier un post déjà envoyé ne le renvoie pas. ⚠️ Pas de `[skip ci]` sur ces commits : il bloquerait l'envoi.
 
@@ -80,7 +80,10 @@ Le job lit `WORKER_SHARED_SECRET` dans les secrets du dépôt : personne n'a à 
 
 ## Rédaction automatique
 
-Une tâche Claude programmée (routine cloud) écrit un post **le mardi et le jeudi à 8 h**, heure de Paris, et le pousse. Tu n'as plus qu'à le valider dans Slack. Ses consignes sont dans [`EDITORIAL.md`](EDITORIAL.md) : sujets, rotation des langues, ton, sources autorisées.
+Une tâche Claude programmée (routine cloud) écrit un post **chaque jour du lundi au vendredi à 8 h** (7 h l'hiver), et le pousse : un sujet par semaine, en français le lundi, puis en anglais, espagnol, portugais et allemand. Ses consignes sont dans [`EDITORIAL.md`](EDITORIAL.md) : sujets, rotation des langues, ton, sources autorisées.
+
+- **Le français se valide dans Slack.** Le valider valide tout le sujet ; le rejeter annule aussi ses traductions.
+- **Les traductions d'un sujet validé sont publiées sans attendre.** Slack en affiche une notification, avec un bouton **Retirer** qui supprime le post de LinkedIn. Tout post publié porte ce bouton.
 
 ## Maintenance
 

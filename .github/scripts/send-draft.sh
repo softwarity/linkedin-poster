@@ -10,7 +10,8 @@ dir=$(dirname "$post")
 project=$(echo "$post" | cut -d/ -f2)
 work=$(mktemp -d)
 
-jq -n --rawfile text "$post" --arg project "$project" '{text: ($text | rtrimstr("\n")), project: $project}' > "$work/payload.json"
+jq -n --rawfile text "$post" --arg project "$project" --arg subject "$dir" --arg lang "$(basename "$post" .txt)" \
+  '{text: ($text | rtrimstr("\n")), project: $project, subject: $subject, lang: $lang}' > "$work/payload.json"
 
 # image.<lang>.* when the image carries text in that language, image.* otherwise
 lang=$(basename "$post" .txt)

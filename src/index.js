@@ -118,11 +118,19 @@ async function tokenStatus(env) {
 // ---------- Drafts & Slack approval ----------
 
 async function createDraft(request, env) {
-  const { text, project, image } = await request.json().catch(() => ({}));
+  const { text, project, image, subject, lang } = await request.json().catch(() => ({}));
   if (typeof text !== "string" || !text.trim()) return json({ error: "text_required" }, 400);
   if (text.length > LI_MAX_LENGTH) return json({ error: "text_too_long", max: LI_MAX_LENGTH }, 400);
 
-  const draft = { id: crypto.randomUUID(), text, project: project || null, status: "pending", created_at: new Date().toISOString() };
+  const draft = {
+    id: crypto.randomUUID(),
+    text,
+    project: project || null,
+    subject: subject || null, // posts/<project>/<slug>: one validation covers every language of it
+    lang: lang || null,
+    status: "pending",
+    created_at: new Date().toISOString(),
+  };
   if (image) {
     // image: { data: base64, type: "image/gif" | "image/png" | "image/jpeg", alt?: string }
     if (!IMAGE_TYPES.includes(image.type)) return json({ error: "image_type_unsupported", allowed: IMAGE_TYPES }, 400);
@@ -132,14 +140,31 @@ async function createDraft(request, env) {
     draft.image = { url: `${new URL(request.url).origin}/media/${draft.id}`, alt: image.alt || draft.project || "image" };
   }
   await saveDraft(env, draft);
-  const res = await slackApi(env, "chat.postMessage", {
-    channel: env.SLACK_CHANNEL_ID,
-    text: `Brouillon LinkedIn${draft.project ? ` — ${draft.project}` : ""}`,
-    blocks: draftBlocks(draft),
-  });
 
+  // A translation of a subject already validated goes out without asking again.
+  const decision = draft.subject && draft.lang !== "fr" ? await env.TOKENS.get(`subject:${draft.subject}`, "json") : null;
+  if (decision?.status === "rejected") {
+    Object.assign(draft, { status: "skipped" });
+    await saveDraft(env, draft);
+    await slackApi(env, "chat.postMessage", { channel: env.SLACK_CHANNEL_ID, text: `⏭️ ${draftTitle(draft)} : non publié, le sujet a été rejeté.` });
+    return json({ id: draft.id, status: draft.status }, 200);
+  }
+  if (decision?.status === "approved") {
+    try {
+      Object.assign(draft, await publishOnLinkedIn(env, draft), { status: "published", decided_by: decision.by });
+      await saveDraft(env, draft);
+      const outcome = `🤖 Publié automatiquement, sujet validé par <@${decision.by}> — <${draft.post_url}|voir le post>`;
+      await slackApi(env, "chat.postMessage", { channel: env.SLACK_CHANNEL_ID, text: outcome, blocks: draftBlocks(draft, outcome) });
+      return json({ id: draft.id, status: draft.status, post_url: draft.post_url }, 201);
+    } catch (err) {
+      draft.warning = `⚠️ Publication automatique échouée (${err.message}) : à valider à la main.`;
+      await saveDraft(env, draft);
+    }
+  }
+
+  const res = await slackApi(env, "chat.postMessage", { channel: env.SLACK_CHANNEL_ID, text: draftTitle(draft), blocks: draftBlocks(draft) });
   const status = await tokenStatus(env);
-  return json({ id: draft.id, slack_ts: res.ts, linkedin: status }, 201);
+  return json({ id: draft.id, status: draft.status, slack_ts: res.ts, linkedin: status }, 201);
 }
 
 async function slackInteraction(request, env, ctx) {
@@ -162,11 +187,22 @@ async function handleAction(env, action, payload) {
 
   const draft = await loadDraft(env, action.value);
   if (!draft) return reply(payload.response_url, "Brouillon introuvable (expiré ?).");
+
+  if (action.action_id === "retract") {
+    if (draft.status !== "published") return reply(payload.response_url, `Rien à retirer (${draft.status}).`);
+    await deleteOnLinkedIn(env, draft.post_urn || draft.post_url.match(/update\/(.+?)\/?$/)[1]);
+    Object.assign(draft, { status: "retracted", retracted_by: user });
+    await saveDraft(env, draft);
+    return replaceMessage(payload.response_url, draft, `🗑️ Retiré de LinkedIn par <@${user}>`);
+  }
+
   if (draft.status !== "pending") return reply(payload.response_url, `Brouillon déjà traité (${draft.status}).`);
 
   if (action.action_id === "reject") {
     Object.assign(draft, { status: "rejected", decided_by: user });
     await saveDraft(env, draft);
+    // Rejecting the French original drops the whole subject; a translation only drops itself.
+    if (draft.subject && draft.lang === "fr") await saveSubject(env, draft.subject, "rejected", user);
     return replaceMessage(payload.response_url, draft, `❌ Rejeté par <@${user}>`);
   }
 
@@ -174,26 +210,51 @@ async function handleAction(env, action, payload) {
     Object.assign(draft, { status: "publishing", decided_by: user });
     await saveDraft(env, draft);
     try {
-      draft.post_url = await publishOnLinkedIn(env, draft);
-      draft.status = "published";
+      Object.assign(draft, await publishOnLinkedIn(env, draft), { status: "published" });
     } catch (err) {
       draft.status = "pending"; // allow a retry once the cause is fixed
       await saveDraft(env, draft);
       return reply(payload.response_url, `⚠️ Publication échouée : ${err.message}`);
     }
     await saveDraft(env, draft);
+    if (draft.subject) await saveSubject(env, draft.subject, "approved", user);
     return replaceMessage(payload.response_url, draft, `✅ Publié par <@${user}> — <${draft.post_url}|voir le post>`);
   }
 }
 
+function draftTitle(draft) {
+  return `LinkedIn${draft.project ? ` — ${draft.project}` : ""}${draft.lang ? ` · ${draft.lang.toUpperCase()}` : ""}`;
+}
+
 function draftBlocks(draft, outcome) {
   const blocks = [
-    { type: "header", text: { type: "plain_text", text: `Brouillon LinkedIn${draft.project ? ` — ${draft.project}` : ""}` } },
+    { type: "header", text: { type: "plain_text", text: draftTitle(draft) } },
     { type: "section", text: { type: "plain_text", text: draft.text, emoji: true } },
   ];
   if (draft.image) blocks.push({ type: "image", image_url: draft.image.url, alt_text: draft.image.alt });
+  if (draft.warning && !outcome) blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: draft.warning }] });
   if (outcome) {
     blocks.push({ type: "context", elements: [{ type: "mrkdwn", text: outcome }] });
+    if (draft.status === "published") {
+      blocks.push({
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            action_id: "retract",
+            text: { type: "plain_text", text: "Retirer" },
+            value: draft.id,
+            confirm: {
+              title: { type: "plain_text", text: "Retirer de LinkedIn ?" },
+              text: { type: "plain_text", text: "Le post sera supprimé de ton profil, avec ses réactions et commentaires." },
+              confirm: { type: "plain_text", text: "Retirer" },
+              deny: { type: "plain_text", text: "Annuler" },
+              style: "danger",
+            },
+          },
+        ],
+      });
+    }
   } else {
     blocks.push({
       type: "actions",
@@ -222,6 +283,10 @@ async function saveDraft(env, draft) {
   await env.TOKENS.put(`draft:${draft.id}`, JSON.stringify(draft), { expirationTtl: DRAFT_TTL });
 }
 
+async function saveSubject(env, subject, status, by) {
+  await env.TOKENS.put(`subject:${subject}`, JSON.stringify({ status, by, at: new Date().toISOString() }), { expirationTtl: 90 * 86400 });
+}
+
 async function loadDraft(env, id) {
   const raw = await env.TOKENS.get(`draft:${id}`);
   return raw ? JSON.parse(raw) : null;
@@ -229,7 +294,7 @@ async function loadDraft(env, id) {
 
 // ---------- LinkedIn publishing ----------
 
-async function publishOnLinkedIn(env, draft) {
+async function linkedInSession(env) {
   const raw = await env.TOKENS.get(KEY_TOKEN);
   if (!raw) throw new Error("pas de token LinkedIn, reconnecte-toi via /authorize");
   const { access_token, person_urn } = JSON.parse(raw);
@@ -239,6 +304,11 @@ async function publishOnLinkedIn(env, draft) {
     "X-Restli-Protocol-Version": "2.0.0",
     "Content-Type": "application/json",
   };
+  return { headers, person_urn };
+}
+
+async function publishOnLinkedIn(env, draft) {
+  const { headers, person_urn } = await linkedInSession(env);
 
   const post = {
     author: person_urn,
@@ -255,7 +325,14 @@ async function publishOnLinkedIn(env, draft) {
 
   const res = await fetch(LI_POSTS_URL, { method: "POST", headers, body: JSON.stringify(post) });
   if (res.status !== 201) throw new Error(`LinkedIn ${res.status} : ${await res.text()}`);
-  return `https://www.linkedin.com/feed/update/${res.headers.get("x-restli-id")}/`;
+  const urn = res.headers.get("x-restli-id");
+  return { post_urn: urn, post_url: `https://www.linkedin.com/feed/update/${urn}/` };
+}
+
+async function deleteOnLinkedIn(env, urn) {
+  const { headers } = await linkedInSession(env);
+  const res = await fetch(`${LI_POSTS_URL}/${encodeURIComponent(urn)}`, { method: "DELETE", headers: { ...headers, "X-RestLi-Method": "DELETE" } });
+  if (res.status !== 204) throw new Error(`LinkedIn ${res.status} : ${await res.text()}`);
 }
 
 async function uploadImage(env, headers, owner, draftId) {

@@ -63,6 +63,90 @@ T = {
         "jwt_sub": "identity · roles · organisation",
         "count_b": "1 binary · 0 dependency · 22 MB at rest",
     },
+    "es": {
+        "title_a": "Sin app-gateway: la pila ensamblada",
+        "title_b": "Con una app-gateway: una sola puerta",
+        "browser": "Navegador",
+        "app": "Sus servicios",
+        "boxes": [
+            ("API gateway", "Kong ×3 + Redis"),
+            ("Proxy de auth", "oauth2-proxy ×2"),
+            ("Identidad", "Keycloak ×3 + PostgreSQL"),
+            ("Bóveda", "Vault, 5 nodos Raft"),
+            ("Certificados", "cert-manager"),
+            ("Monitorización", "Prometheus, Grafana"),
+            ("Auditoría", "Retraced + Elastic"),
+        ],
+        "todo": ("A desarrollar usted mismo", "menú, portal, pantallas de organización"),
+        "count_a": "≈ 38 pods que operar · 5 motores de almacenamiento",
+        "meerkat_sub": "app-gateway",
+        "chips": [
+            "inicio de sesión · MFA · passkeys · SSO",
+            "roles · organizaciones · tokens de API",
+            "enrutamiento · límites · cuotas",
+            "TLS · ACME · bóveda de secretos",
+            "auditoría · paneles",
+        ],
+        "jwt": "JWT firmado",
+        "jwt_sub": "identidad · roles · organización",
+        "count_b": "1 binario · 0 dependencias · 22 MB en reposo",
+    },
+    "pt": {
+        "title_a": "Sem app-gateway: a pilha montada",
+        "title_b": "Com uma app-gateway: uma única porta",
+        "browser": "Navegador",
+        "app": "Seus serviços",
+        "boxes": [
+            ("API gateway", "Kong ×3 + Redis"),
+            ("Proxy de auth", "oauth2-proxy ×2"),
+            ("Identidade", "Keycloak ×3 + PostgreSQL"),
+            ("Cofre", "Vault, 5 nós Raft"),
+            ("Certificados", "cert-manager"),
+            ("Monitoramento", "Prometheus, Grafana"),
+            ("Auditoria", "Retraced + Elastic"),
+        ],
+        "todo": ("Para você desenvolver", "menu, portal, telas de organização"),
+        "count_a": "≈ 38 pods para operar · 5 mecanismos de armazenamento",
+        "meerkat_sub": "app-gateway",
+        "chips": [
+            "login · MFA · passkeys · SSO",
+            "papéis · organizações · tokens de API",
+            "roteamento · limites · cotas",
+            "TLS · ACME · cofre de segredos",
+            "auditoria · painéis",
+        ],
+        "jwt": "JWT assinado",
+        "jwt_sub": "identidade · papéis · organização",
+        "count_b": "1 binário · 0 dependências · 22 MB em repouso",
+    },
+    "de": {
+        "title_a": "Ohne App-Gateway: der zusammengesetzte Stack",
+        "title_b": "Mit einem App-Gateway: eine einzige Tür",
+        "browser": "Browser",
+        "app": "Ihre Services",
+        "boxes": [
+            ("API-Gateway", "Kong ×3 + Redis"),
+            ("Auth-Proxy", "oauth2-proxy ×2"),
+            ("Identität", "Keycloak ×3 + PostgreSQL"),
+            ("Tresor", "Vault, 5 Raft-Knoten"),
+            ("Zertifikate", "cert-manager"),
+            ("Monitoring", "Prometheus, Grafana"),
+            ("Audit", "Retraced + Elastic"),
+        ],
+        "todo": ("Selbst zu entwickeln", "Menü, Portal, Organisationsseiten"),
+        "count_a": "≈ 38 Pods zu betreiben · 5 Speicher-Engines",
+        "meerkat_sub": "app-gateway",
+        "chips": [
+            "Login · MFA · Passkeys · SSO",
+            "Rollen · Organisationen · API-Tokens",
+            "Routing · Rate-Limits · Quotas",
+            "TLS · ACME · Secrets-Tresor",
+            "Audit · Dashboards",
+        ],
+        "jwt": "signiertes JWT",
+        "jwt_sub": "Identität · Rollen · Organisation",
+        "count_b": "1 Binary · 0 Abhängigkeiten · 22 MB im Ruhezustand",
+    },
 }
 
 BG, PANEL, BORDER, TEXT, MUTED = "#0d1117", "#161b22", "#30363d", "#e6edf3", "#8b949e"
@@ -125,7 +209,7 @@ def svg(lang):
 </circle>''')
 
     # Phase B: one door
-    mx, my, mw, mh = 250, 88, 400, 290
+    mx, my, mw, mh = 235, 88, 370, 290
     chips = "".join(
         f'<circle cx="{mx + 34}" cy="{my + 108 + k * 34}" r="5" fill="{GREEN if k % 2 == 0 else PURPLE}"/>'
         f'<text x="{mx + 50}" y="{my + 113 + k * 34}" fill="{TEXT}" font-size="14">{escape(c)}</text>'
@@ -141,7 +225,7 @@ def svg(lang):
     out.append(f'''<g opacity="0">{fade(B_BEGIN + 0.6, B_END)}
   <line x1="162" y1="245" x2="{mx - 4}" y2="245" stroke="{BLUE}" stroke-width="2"/>
   <line x1="{mx + mw + 4}" y1="245" x2="738" y2="245" stroke="{GREEN}" stroke-width="2"/>
-  <text x="{(mx + mw + 740) / 2}" y="232" text-anchor="middle" fill="{GREEN}" font-size="14" font-weight="600">{escape(t["jwt"])}</text>
+  <text x="{(mx + mw + 740) / 2}" y="232" text-anchor="middle" fill="{GREEN}" font-size="13" font-weight="600">{escape(t["jwt"])}</text>
 </g>''')
     out.append(f'<text x="805" y="305" text-anchor="middle" fill="{MUTED}" font-size="11" opacity="0">{escape(t["jwt_sub"])}{fade(B_BEGIN + 2.6, B_END)}</text>')
     out.append(f'<text x="450" y="425" text-anchor="middle" fill="{GREEN}" font-size="17" font-weight="600" opacity="0">{escape(t["count_b"])}{fade(B_BEGIN + 1.2, B_END)}</text>')
