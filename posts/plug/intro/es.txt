@@ -1,0 +1,25 @@
+Port-forwards, localhost:PORT, cambios en /etc/hosts, un .env copiado a mano desde el despliegue… todo eso solo para que su código local pueda hablar con el resto del stack.
+
+Escribí plug para acabar con eso.
+
+plug -s my-app:8080:3000 npm run start:dev
+
+Anteponga plug a cualquier comando y su proceso local pasa a ser un miembro más del clúster:
+→ llega a los servicios del clúster por su nombre real (postgres, api, rabbitmq…)
+→ es accesible dentro del clúster, con el nombre que usted elija
+→ si ese servicio ya está desplegado, plug lo aparta durante la sesión, le pasa sus variables de entorno (secretos incluidos) y lo vuelve a poner en su lugar al salir
+→ sin cambios en el código y sin proxy: Node, JVM, Python, Go, gRPC, drivers de bases de datos…
+
+Detenga el comando: su máquina queda exactamente como estaba.
+
+¿Por qué otra herramienta, si ya existen mirrord y Telepresence? Están centradas en Kubernetes y exigen que cada desarrollador tenga un kubeconfig con permisos sobre el clúster. plug apunta a otra cosa:
+• el mismo comportamiento en Docker, Compose, Swarm y Kubernetes
+• nada que instalar a mano: un único comando ssh, servido por el propio clúster
+• el servicio no necesita existir todavía: el que usted está escribiendo es accesible para el resto del stack, con su nombre definitivo
+
+Linux, macOS y Windows, varios clústeres en paralelo y un servidor MCP para los agentes de IA de programación.
+
+El código fuente está en GitHub: https://github.com/softwarity/plug
+La documentación: https://softwarity.github.io/plug/
+
+#DevOps #Docker #Kubernetes #DeveloperExperience #Microservices
