@@ -17,7 +17,11 @@ done | sort -u
 
 - Si le sujet le plus récent (celui dont le `fr.txt` a été ajouté en dernier : `git log --diff-filter=A --format=%as -- <fichier>`) n'a pas toutes ses langues, écrire la première qui manque dans l'ordre `en`, `es`, `pt`, `de`. Toujours finir un sujet avant d'en commencer un autre.
 - Si le sujet le plus récent est complet et que l'on **n'est pas lundi**, ne rien écrire : terminer sans commit, en le disant dans le résumé. Un nouveau sujet ne commence que le lundi.
-- Si l'on est lundi, commencer un nouveau sujet en `fr`, sur l'autre projet que le dernier sujet. **Si un sujet planifié attend pour ce projet** (un dossier qui contient un `brief.md` mais pas de `fr.txt`), le traiter en priorité, le plus ancien d'abord : écrire son `fr.txt` en suivant le brief, qui prime sur les consignes générales. Sans sujet planifié, créer `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
+- Si l'on est lundi, commencer un nouveau sujet en `fr` :
+  1. **D'abord un sujet planifié**, s'il y en a un pour un projet qui n'est pas en pause : un dossier qui contient un `brief.md` mais pas de `fr.txt`, le plus ancien d'abord (date du dossier). Écrire son `fr.txt` en suivant le brief, qui prime sur les consignes générales.
+  2. Sinon, un nouveau sujet sur l'autre projet que le dernier sujet, s'il n'est pas en pause (sinon, sur le même projet), dans `posts/<projet>/<AAAA-MM-JJ>-<slug>/fr.txt`.
+
+**Projets en pause** : **Meerkat**, jusqu'à ce que François le relance (la version d'évaluation est en cours de finalisation). N'écrire aucun post sur Meerkat, même planifié, tant qu'il figure ici.
 
 ## Projets et sources autorisées
 
