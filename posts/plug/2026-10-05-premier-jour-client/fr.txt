@@ -1,0 +1,24 @@
+J'arrive chez un client. Première mission : une feature qui dépend fortement des données.
+
+Il y a bien une plateforme de dev avec de vraies données. Mais rien pour reproduire cet environnement sur mon poste : les ports des bases sont exposés sur le cluster, sans plus d'info, et pareil pour le GeoServer. Je clone le dépôt, la procédure dit « remplir un .env, lancer en mode watch ». Il me faut donc tous les identifiants… La galère classique du premier jour.
+
+Je demande au DevOps d'ajouter un seul conteneur au cluster : l'agent plug. Puis, sur mon poste :
+
+plug -s my-api:8080:8080 ./mvnw spring-boot:run
+plug -s my-app:8080:3000 npm run start:dev
+
+Mon backend et mon UI locaux prennent la place des services déployés. Ils héritent de leurs variables d'environnement, de leurs secrets, de leurs fichiers de config, et même de leurs volumes, montés en direct. Aucun .env à reconstituer.
+
+J'ouvre la plateforme de dev dans mon navigateur : c'est mon UI qui répond, branchée sur mon backend, sur les vraies données.
+
+Je développe (avec Claude), en rechargement à chaud. Le lendemain, le métier valide directement sur la plateforme. PR, merge, livré. Je coupe plug : les services d'origine reprennent leur place.
+
+Merci plug.
+
+Docker, Compose, Swarm ou Kubernetes, depuis Linux, macOS ou Windows.
+Le code source est sur GitHub : https://github.com/softwarity/plug
+La doc : https://softwarity.github.io/plug/
+
+Et vous, combien de temps vous faut-il pour avoir un environnement de dev complet chez un nouveau client ?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Microservices
