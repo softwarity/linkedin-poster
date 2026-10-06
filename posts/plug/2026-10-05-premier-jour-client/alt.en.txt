@@ -1,0 +1,1 @@
+Animation: a request enters the cluster, plug sets the deployed service aside and routes the request to the process running on the developer's machine.
