@@ -1,0 +1,1 @@
+Animación: una petición entra en el clúster, plug aparta el servicio desplegado y la redirige al proceso que se ejecuta en la máquina del desarrollador.

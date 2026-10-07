@@ -1,0 +1,24 @@
+Primer día con un cliente nuevo. Mi primera tarea: una funcionalidad que depende mucho de los datos.
+
+Hay una plataforma de desarrollo con datos reales. Pero nada para reproducir ese entorno en mi máquina: los puertos de las bases de datos están expuestos en el clúster, sin más información, y lo mismo pasa con el GeoServer. Clono el repositorio y la guía dice «completar un .env y arrancar en modo watch». O sea, necesito todas las credenciales… El clásico calvario del primer día.
+
+Le pido al equipo de DevOps que agregue un solo contenedor al clúster: el agente de plug. Luego, en mi máquina:
+
+plug -s my-api:8080:8080 ./mvnw spring-boot:run
+plug -s my-app:8080:3000 npm run start:dev
+
+Mi backend y mi UI locales toman el lugar de los servicios desplegados. Heredan sus variables de entorno, sus secretos, sus archivos de configuración e incluso sus volúmenes, montados en vivo. Ningún .env que reconstruir.
+
+Abro la plataforma de desarrollo en el navegador: quien responde es mi UI, conectada a mi backend, con los datos reales.
+
+Desarrollo (con Claude), con recarga en caliente. Al día siguiente, el equipo de negocio lo valida directamente en la plataforma. PR, merge, entregado. Detengo plug: los servicios originales vuelven a su lugar.
+
+Gracias, plug.
+
+Docker, Compose, Swarm o Kubernetes, desde Linux, macOS o Windows.
+El código fuente está en GitHub: https://github.com/softwarity/plug
+La documentación: https://softwarity.github.io/plug/
+
+Y usted, ¿cuánto tiempo tarda en tener un entorno de desarrollo completo con un cliente nuevo?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Microservices
