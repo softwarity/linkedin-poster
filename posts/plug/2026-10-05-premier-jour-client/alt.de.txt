@@ -1,0 +1,1 @@
+Animation: Eine Anfrage kommt im Cluster an, plug legt den deployten Service beiseite und leitet sie an den Prozess auf dem Rechner des Entwicklers weiter.
