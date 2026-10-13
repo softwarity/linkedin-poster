@@ -1,0 +1,26 @@
+Your MongoDB runs inside the cluster, no port is exposed, and all you want is to open it in Compass. A port-forward? Change the stack? There's a simpler way.
+
+plug runs a local process as if it were inside your Docker, Compose, Swarm or Kubernetes cluster.
+
+A real case: I need to check a few documents in the dev database. MongoDB is right there, reachable by the services under the name mongodb, but nothing is exposed to the outside. Usually that means opening a port-forward, or publishing a port in the stack… and remembering to remove it afterwards.
+
+With plug, on my Mac:
+
+plug -c open -a Compass
+
+Compass connects to mongodb:27017, by name, like any other service in the cluster. No localhost:PORT, no /etc/hosts.
+
+The -c flag is pure client mode: the process reaches services by name, but nothing is named in the cluster and no port is reserved on the agent. It works for any tool that only consumes: a database GUI, a one-off script, or a simple:
+
+plug -c psql -h postgres
+
+I close Compass: my machine is exactly as it was.
+
+On Linux, it's plug -c mongodb-compass; on Windows, you pass the path to the Compass executable.
+
+The source code is on GitHub: https://github.com/softwarity/plug
+Docs: https://softwarity.github.io/plug/
+
+How do you open your cluster's databases with your GUI tools?
+
+#DevOps #Kubernetes #Docker #MongoDB #DeveloperExperience
