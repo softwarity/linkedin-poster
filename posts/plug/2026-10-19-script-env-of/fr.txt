@@ -1,0 +1,25 @@
+Un script ponctuel à lancer sur la base de dev, et les identifiants sont dans les secrets du service déployé. Les recopier dans un .env ? Il y a plus simple.
+
+plug fait tourner un process local comme s'il était dans votre cluster Docker, Compose, Swarm ou Kubernetes.
+
+Cas vécu : je dois corriger des données en dev avec un petit script Python. Le service orders-svc a tout ce qu'il faut : l'URL de la base, l'utilisateur, le mot de passe. Mais tout ça vit dans ses variables d'environnement, côté cluster. D'habitude, je vais les chercher une par une, je les colle dans un .env… qui traîne ensuite sur mon poste.
+
+Avec plug :
+
+plug -c --env-of orders-svc python job.py
+
+Mon script reçoit l'environnement du service déployé, secrets compris, et atteint la base par son nom, comme n'importe quel service du cluster. Aucun mot de passe recopié nulle part.
+
+Ce que je retiens :
+→ orders-svc n'est pas mis de côté : le service déployé continue de tourner
+→ le -c, c'est le mode client pur : mon script consomme, rien n'est nommé dans le cluster
+→ ce sont les données du cluster, pas une copie : ce que le script écrit, l'équipe le lit
+
+Le script se termine : ma machine est exactement comme avant, sans .env oublié.
+
+Le code source est sur GitHub : https://github.com/softwarity/plug
+La doc : https://softwarity.github.io/plug/
+
+Et vous, où vont les identifiants quand vous lancez un script ponctuel contre votre cluster ?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Security
