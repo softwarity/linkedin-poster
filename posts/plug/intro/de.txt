@@ -20,6 +20,6 @@ Warum noch ein Tool, wenn es mirrord und Telepresence gibt? Beide sind auf Kuber
 Linux, macOS und Windows, mehrere Cluster parallel und ein MCP-Server für KI-Coding-Agenten.
 
 Der Quellcode liegt auf GitHub: https://github.com/softwarity/plug
-Die Doku: https://softwarity.github.io/plug/
+Die Doku: https://plug.softwarity.dev
 
 #DevOps #Docker #Kubernetes #DeveloperExperience #Microservices

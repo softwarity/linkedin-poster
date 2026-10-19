@@ -19,7 +19,7 @@ Ich schließe Compass: Mein Rechner ist genau so wie vorher.
 Unter Linux heißt es plug -c mongodb-compass; unter Windows geben Sie den Pfad zur ausführbaren Datei von Compass an.
 
 Der Quellcode liegt auf GitHub: https://github.com/softwarity/plug
-Die Doku: https://softwarity.github.io/plug/
+Die Doku: https://plug.softwarity.dev
 
 Und Sie: Wie öffnen Sie die Datenbanken in Ihrem Cluster mit Ihren grafischen Tools?
 

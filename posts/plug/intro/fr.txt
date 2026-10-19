@@ -20,6 +20,6 @@ Pourquoi un outil de plus, alors que mirrord et Telepresence existent ? Ils sont
 Linux, macOS et Windows, plusieurs clusters en parallèle, et un serveur MCP pour les agents IA de code.
 
 Le code source est sur GitHub : https://github.com/softwarity/plug
-La doc : https://softwarity.github.io/plug/
+La doc : https://plug.softwarity.dev
 
 #DevOps #Docker #Kubernetes #DeveloperExperience #Microservices

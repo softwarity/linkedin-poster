@@ -19,7 +19,7 @@ Fecho o Compass: minha máquina fica exatamente como estava.
 No Linux, é plug -c mongodb-compass; no Windows, basta passar o caminho do executável do Compass.
 
 O código-fonte está no GitHub: https://github.com/softwarity/plug
-A documentação: https://softwarity.github.io/plug/
+A documentação: https://plug.softwarity.dev
 
 E você, como abre os bancos de dados do seu cluster com suas ferramentas gráficas?
 

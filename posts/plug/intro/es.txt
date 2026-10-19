@@ -20,6 +20,6 @@ Detenga el comando: su máquina queda exactamente como estaba.
 Linux, macOS y Windows, varios clústeres en paralelo y un servidor MCP para los agentes de IA de programación.
 
 El código fuente está en GitHub: https://github.com/softwarity/plug
-La documentación: https://softwarity.github.io/plug/
+La documentación: https://plug.softwarity.dev
 
 #DevOps #Docker #Kubernetes #DeveloperExperience #Microservices

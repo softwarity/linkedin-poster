@@ -17,7 +17,7 @@ Danke, plug.
 
 Docker, Compose, Swarm oder Kubernetes, unter Linux, macOS oder Windows.
 Der Quellcode liegt auf GitHub: https://github.com/softwarity/plug
-Die Doku: https://softwarity.github.io/plug/
+Die Doku: https://plug.softwarity.dev
 
 Und Sie: Wie lange brauchen Sie bei einem neuen Kunden, bis Ihre Dev-Umgebung komplett steht?
 

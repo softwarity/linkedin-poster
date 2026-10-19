@@ -20,6 +20,6 @@ Why another tool when mirrord and Telepresence exist? They are Kubernetes-centri
 Linux, macOS and Windows, several clusters in parallel, and an MCP server for AI coding agents.
 
 The source code is on GitHub: https://github.com/softwarity/plug
-Docs: https://softwarity.github.io/plug/
+Docs: https://plug.softwarity.dev
 
 #DevOps #Docker #Kubernetes #DeveloperExperience #Microservices

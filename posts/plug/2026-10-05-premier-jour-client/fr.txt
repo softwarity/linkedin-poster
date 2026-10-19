@@ -17,7 +17,7 @@ Merci plug.
 
 Docker, Compose, Swarm ou Kubernetes, depuis Linux, macOS ou Windows.
 Le code source est sur GitHub : https://github.com/softwarity/plug
-La doc : https://softwarity.github.io/plug/
+La doc : https://plug.softwarity.dev
 
 Et vous, combien de temps vous faut-il pour avoir un environnement de dev complet chez un nouveau client ?
 

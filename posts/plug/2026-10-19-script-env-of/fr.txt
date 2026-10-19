@@ -18,7 +18,7 @@ Ce que je retiens :
 Le script se termine : ma machine est exactement comme avant, sans .env oublié.
 
 Le code source est sur GitHub : https://github.com/softwarity/plug
-La doc : https://softwarity.github.io/plug/
+La doc : https://plug.softwarity.dev
 
 Et vous, où vont les identifiants quand vous lancez un script ponctuel contre votre cluster ?
 

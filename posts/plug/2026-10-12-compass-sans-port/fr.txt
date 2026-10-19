@@ -19,7 +19,7 @@ Je ferme Compass : ma machine est exactement comme avant.
 Sous Linux, c'est plug -c mongodb-compass ; sous Windows, on donne le chemin de l'exécutable de Compass.
 
 Le code source est sur GitHub : https://github.com/softwarity/plug
-La doc : https://softwarity.github.io/plug/
+La doc : https://plug.softwarity.dev
 
 Et vous, comment ouvrez-vous les bases de votre cluster avec vos outils graphiques ?
 

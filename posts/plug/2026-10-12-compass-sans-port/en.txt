@@ -19,7 +19,7 @@ I close Compass: my machine is exactly as it was.
 On Linux, it's plug -c mongodb-compass; on Windows, you pass the path to the Compass executable.
 
 The source code is on GitHub: https://github.com/softwarity/plug
-Docs: https://softwarity.github.io/plug/
+Docs: https://plug.softwarity.dev
 
 How do you open your cluster's databases with your GUI tools?
 
