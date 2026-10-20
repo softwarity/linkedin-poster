@@ -1,0 +1,25 @@
+A one-off script to run against the dev database, and the credentials live in the deployed service's secrets. Copy them into a .env file? There's a simpler way.
+
+plug runs a local process as if it were inside your Docker, Compose, Swarm or Kubernetes cluster.
+
+A real case: I need to fix some data in dev with a small Python script. The orders-svc service has everything I need: the database URL, the user, the password. But all of that lives in its environment variables, on the cluster side. Usually I fetch them one by one and paste them into a .env file… which then lingers on my laptop.
+
+With plug:
+
+plug -c --env-of orders-svc python job.py
+
+My script gets the deployed service's environment, secrets included, and reaches the database by name, like any other service in the cluster. No password copied anywhere.
+
+What I take away:
+→ orders-svc isn't set aside: the deployed service keeps running
+→ -c is pure client mode: my script only consumes, nothing is named in the cluster
+→ it's the cluster's data, not a copy: what the script writes, the team reads
+
+When the script ends, my machine is exactly as it was, with no forgotten .env file.
+
+The source code is on GitHub: https://github.com/softwarity/plug
+Docs: https://plug.softwarity.dev
+
+Where do your credentials end up when you run a one-off script against your cluster?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Security
