@@ -1,0 +1,25 @@
+Tiene que ejecutar un script puntual contra la base de datos de desarrollo, y las credenciales están en los secretos del servicio desplegado. ¿Copiarlas en un .env? Hay una forma más sencilla.
+
+plug ejecuta un proceso local como si estuviera dentro de su clúster Docker, Compose, Swarm o Kubernetes.
+
+Un caso real: necesito corregir unos datos en desarrollo con un pequeño script de Python. El servicio orders-svc tiene todo lo necesario: la URL de la base de datos, el usuario, la contraseña. Pero todo eso vive en sus variables de entorno, del lado del clúster. Normalmente las busco una por una y las pego en un .env… que luego se queda olvidado en mi equipo.
+
+Con plug:
+
+plug -c --env-of orders-svc python job.py
+
+Mi script recibe el entorno del servicio desplegado, secretos incluidos, y llega a la base de datos por su nombre, como cualquier otro servicio del clúster. Ninguna contraseña copiada en ningún lado.
+
+Lo que me llevo:
+→ orders-svc no se aparta: el servicio desplegado sigue funcionando
+→ -c es el modo cliente puro: mi script solo consume, no se registra ningún nombre en el clúster
+→ son los datos del clúster, no una copia: lo que el script escribe, el equipo lo lee
+
+Cuando el script termina, mi máquina queda exactamente como estaba, sin ningún .env olvidado.
+
+El código fuente está en GitHub: https://github.com/softwarity/plug
+La documentación: https://plug.softwarity.dev
+
+Y usted, ¿adónde van a parar las credenciales cuando ejecuta un script puntual contra su clúster?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Security
