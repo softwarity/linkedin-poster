@@ -1,0 +1,25 @@
+Você precisa rodar um script pontual no banco de desenvolvimento, e as credenciais estão nos secrets do serviço implantado. Copiar tudo para um .env? Tem um jeito mais simples.
+
+O plug roda um processo local como se ele estivesse dentro do seu cluster Docker, Compose, Swarm ou Kubernetes.
+
+Um caso real: preciso corrigir alguns dados em desenvolvimento com um pequeno script Python. O serviço orders-svc tem tudo o que é necessário: a URL do banco, o usuário, a senha. Só que tudo isso fica nas variáveis de ambiente dele, do lado do cluster. Normalmente, eu vou buscar uma por uma e colo num .env… que depois fica esquecido na minha máquina.
+
+Com o plug:
+
+plug -c --env-of orders-svc python job.py
+
+Meu script recebe o ambiente do serviço implantado, secrets incluídos, e alcança o banco pelo nome, como qualquer outro serviço do cluster. Nenhuma senha copiada em lugar nenhum.
+
+O que fica:
+→ o orders-svc não é tirado do ar: o serviço implantado continua rodando
+→ o -c é o modo cliente puro: meu script só consome, nenhum nome é registrado no cluster
+→ são os dados do cluster, não uma cópia: o que o script grava, o time lê
+
+Quando o script termina, minha máquina fica exatamente como estava, sem nenhum .env esquecido.
+
+O código-fonte está no GitHub: https://github.com/softwarity/plug
+A documentação: https://plug.softwarity.dev
+
+E você, para onde vão as credenciais quando roda um script pontual contra o seu cluster?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Security
