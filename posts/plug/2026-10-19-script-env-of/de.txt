@@ -1,0 +1,25 @@
+Ein einmaliges Skript soll gegen die Dev-Datenbank laufen, und die Zugangsdaten stecken in den Secrets des deployten Service. In eine .env-Datei kopieren? Es geht einfacher.
+
+plug lässt einen lokalen Prozess so laufen, als wäre er Teil Ihres Docker-, Compose-, Swarm- oder Kubernetes-Clusters.
+
+Ein echter Fall: Ich muss in Dev ein paar Daten mit einem kleinen Python-Skript korrigieren. Der Service orders-svc hat alles, was ich brauche: die URL der Datenbank, den Benutzer, das Passwort. Aber all das steckt in seinen Umgebungsvariablen, auf der Cluster-Seite. Normalerweise hole ich sie mir einzeln, kopiere sie in eine .env-Datei… die danach auf meinem Rechner liegen bleibt.
+
+Mit plug:
+
+plug -c --env-of orders-svc python job.py
+
+Mein Skript erhält die Umgebung des deployten Service, Secrets inklusive, und erreicht die Datenbank über ihren Namen, wie jeder andere Service im Cluster. Kein Passwort wird irgendwohin kopiert.
+
+Was ich mitnehme:
+→ orders-svc wird nicht beiseitegestellt: Der deployte Service läuft weiter
+→ -c ist der reine Client-Modus: Mein Skript konsumiert nur, im Cluster wird nichts benannt
+→ Es sind die Daten des Clusters, keine Kopie: Was das Skript schreibt, liest das Team
+
+Das Skript ist fertig: Mein Rechner ist genau so wie vorher, ohne vergessene .env-Datei.
+
+Der Quellcode liegt auf GitHub: https://github.com/softwarity/plug
+Die Doku: https://plug.softwarity.dev
+
+Und Sie: Wo landen Ihre Zugangsdaten, wenn Sie ein einmaliges Skript gegen Ihren Cluster laufen lassen?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Security
