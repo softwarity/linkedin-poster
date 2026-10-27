@@ -1,0 +1,23 @@
+My feature works on my machine. Before I open the pull request, QA needs to try it. Build, deploy to the test platform, and start over with every remark? There's a simpler way.
+
+plug runs a local process as if it were inside your Docker, Compose, Swarm or Kubernetes cluster.
+
+A real case: the QA person knows the test platform's address, and nothing about my machine, which sits behind a firewall, a NAT, a VPN. Usually, every round of feedback means a build and a deployment. Or a per-branch preview environment, to build and to maintain.
+
+With plug, I serve the front end straight from my branch:
+
+plug -p test -s web:80:4200 npm start
+
+QA opens the platform as usual, with the same address and the same login: the ingress sends web to my process. A remark? I fix it, save, and their next reload has it. Once it's approved: Ctrl-C, commit, push, pull request.
+
+What I take away:
+→ the tunnel is opened by my machine, outbound: nothing has to route to it
+→ during the session, everyone on the platform sees my version: a name is served by one process at a time, so I give the team a heads-up
+→ a dev server that checks the Host header rejects the platform's address until you allow it: server.allowedHosts in Vite, --allowed-hosts on ng serve
+
+The source code is on GitHub: https://github.com/softwarity/plug
+Docs: https://plug.softwarity.dev
+
+How many deployments does it take before QA signs off on a feature in your team?
+
+#DevOps #Kubernetes #Docker #QA #DeveloperExperience
