@@ -1,0 +1,23 @@
+Mi feature funciona en mi equipo. Antes de abrir la pull request, QA tiene que probarla. ¿Compilar, desplegar en la plataforma de pruebas y volver a empezar con cada comentario? Hay una forma más sencilla.
+
+plug ejecuta un proceso local como si estuviera dentro de su clúster Docker, Compose, Swarm o Kubernetes.
+
+Un caso real: la persona de QA conoce la dirección de la plataforma de pruebas, pero nada de mi máquina, que está detrás de un firewall, un NAT, una VPN. Normalmente, cada ronda de comentarios implica un build y un despliegue. O un entorno de preview por rama, que hay que montar y mantener.
+
+Con plug, sirvo el front directamente desde mi rama:
+
+plug -p test -s web:80:4200 npm start
+
+QA abre la plataforma como siempre, con la misma dirección y el mismo inicio de sesión: el ingress envía web a mi proceso. ¿Un comentario? Lo corrijo, guardo, y en su siguiente recarga ya lo tiene. Cuando está aprobado: Ctrl-C, commit, push, pull request.
+
+Lo que me llevo:
+→ el túnel lo abre mi máquina, de salida: nada tiene que enrutarse hacia ella
+→ durante la sesión, todos en la plataforma ven mi versión: un nombre lo sirve un solo proceso a la vez, así que aviso al equipo
+→ un servidor de desarrollo que verifica la cabecera Host rechaza la dirección de la plataforma hasta que se autoriza: server.allowedHosts en Vite, --allowed-hosts en ng serve
+
+El código fuente está en GitHub: https://github.com/softwarity/plug
+La documentación: https://plug.softwarity.dev
+
+Y en su equipo, ¿cuántos despliegues hacen falta para que QA valide una feature?
+
+#DevOps #Kubernetes #Docker #QA #DeveloperExperience
