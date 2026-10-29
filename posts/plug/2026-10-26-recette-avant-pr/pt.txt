@@ -1,0 +1,23 @@
+Minha feature funciona na minha máquina. Antes de abrir o pull request, o time de QA precisa testá-la. Fazer o build, implantar na plataforma de testes e repetir tudo a cada comentário? Tem um jeito mais simples.
+
+O plug roda um processo local como se ele estivesse dentro do seu cluster Docker, Compose, Swarm ou Kubernetes.
+
+Um caso real: a pessoa de QA conhece o endereço da plataforma de testes, mas nada da minha máquina, que fica atrás de um firewall, de um NAT, de uma VPN. Normalmente, cada rodada de comentários significa um build e um deploy. Ou um ambiente de preview por branch, que alguém precisa montar e manter.
+
+Com o plug, sirvo o front direto da minha branch:
+
+plug -p test -s web:80:4200 npm start
+
+O QA abre a plataforma como sempre, com o mesmo endereço e o mesmo login: o ingress manda web para o meu processo. Um comentário? Eu corrijo, salvo, e no próximo reload a correção já está lá. Quando estiver aprovado: Ctrl-C, commit, push, pull request.
+
+O que fica:
+→ o túnel é aberto pela minha máquina, de saída: nada precisa ser roteado até ela
+→ durante a sessão, todo mundo na plataforma vê a minha versão: um nome é servido por um único processo de cada vez, então eu aviso o time
+→ um servidor de desenvolvimento que verifica o cabeçalho Host recusa o endereço da plataforma até que ele seja liberado: server.allowedHosts no Vite, --allowed-hosts no ng serve
+
+O código-fonte está no GitHub: https://github.com/softwarity/plug
+A documentação: https://plug.softwarity.dev
+
+E no seu time, quantos deploys são necessários até o QA validar uma feature?
+
+#DevOps #Kubernetes #Docker #QA #DeveloperExperience
