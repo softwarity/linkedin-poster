@@ -1,0 +1,25 @@
+J'écris l'écran, un collègue écrit l'endpoint derrière. Chacun sur sa branche, sur sa machine. Un mock en attendant son déploiement, puis un redéploiement à chaque champ manquant ? Il y a plus simple.
+
+plug fait tourner un process local comme s'il était dans votre cluster Docker, Compose, Swarm ou Kubernetes.
+
+Cas vécu : on se retrouve dans le cluster de dev. Mon collègue sert le back end depuis sa branche, en mode watch :
+
+plug -p demo -s api:8080:3000 npm run start:dev
+
+Je sers le front depuis la mienne. Mon serveur de dev proxifie /api vers http://api:8080, son adresse dans le cluster, qui est maintenant le process de mon collègue :
+
+plug -p demo -s web:80:4200 npm start
+
+Il me faut GET /orders/:id/lines. Je le lui dis ; il l'écrit, enregistre, son process se recharge, et mon appel suivant l'atteint. Un champ qui manque, un code de statut à changer : le même aller-retour, en quelques secondes, pendant que son code lit la vraie base du cluster. Quand l'écran fonctionne, la QA l'ouvre sur la plateforme, et chacun ouvre sa pull request.
+
+Ce que je retiens :
+→ aucune des deux machines ne joint l'autre : les deux tunnels sont ouverts en sortie, vers le cluster. On peut être sur deux réseaux, deux VPN, deux pays
+→ pendant la session, tout le cluster voit son api, moi comme les autres : sur un cluster partagé, on prévient l'équipe
+→ si je ne fais que consommer, sans montrer l'écran à personne : -c à la place de -s web:80:4200, et mon serveur de dev atteint toujours son api
+
+Le code source est sur GitHub : https://github.com/softwarity/plug
+La doc : https://plug.softwarity.dev
+
+Et vous, combien de temps votre front attend-il le déploiement du back ?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Microservices
