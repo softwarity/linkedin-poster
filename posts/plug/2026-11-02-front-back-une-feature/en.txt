@@ -1,0 +1,25 @@
+I write the screen, a colleague writes the endpoint behind it. Each on our own branch, our own machine. A mock until his branch is deployed, then a redeploy for every missing field? There's a simpler way.
+
+plug runs a local process as if it were inside your Docker, Compose, Swarm or Kubernetes cluster.
+
+A real case: we meet in the dev cluster. My colleague serves the back end from his branch, in watch mode:
+
+plug -p demo -s api:8080:3000 npm run start:dev
+
+I serve the front end from mine. My dev server proxies /api to http://api:8080, its address in the cluster, which is now my colleague's process:
+
+plug -p demo -s web:80:4200 npm start
+
+I need GET /orders/:id/lines. I tell him; he writes it, saves, his process reloads, and my next call reaches it. A missing field, a status code to change: same round trip, in seconds, while his code reads the cluster's real database. Once the screen works, QA opens it on the platform, and each of us opens a pull request.
+
+What I take away:
+→ neither machine reaches the other: both tunnels are opened outbound, to the cluster. We can be on two networks, two VPNs, in two countries
+→ during the session, the whole cluster gets his api, me and everyone else: on a shared cluster, give the team a heads-up
+→ if I'm only consuming, not showing the screen to anyone: -c instead of -s web:80:4200, and my dev server still reaches his api
+
+The source code is on GitHub: https://github.com/softwarity/plug
+Docs: https://plug.softwarity.dev
+
+How long does your front end wait for the back end to be deployed?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Microservices
