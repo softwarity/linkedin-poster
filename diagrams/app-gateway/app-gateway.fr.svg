@@ -75,7 +75,7 @@
   <text x="672.5" y="232" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="600">JWT signé</text>
 </g>
 <text x="805" y="305" text-anchor="middle" fill="#8b949e" font-size="11" opacity="0">identité · rôles · organisation<animate attributeName="opacity" from="0" to="1" begin="10.6s" dur="0.4s" fill="freeze"/><animate attributeName="opacity" from="1" to="0" begin="15.3s" dur="0.4s" fill="freeze"/></text>
-<text x="450" y="425" text-anchor="middle" fill="#3fb950" font-size="17" font-weight="600" opacity="0">1 binaire · 0 dépendance · 22 Mo au repos<animate attributeName="opacity" from="0" to="1" begin="9.2s" dur="0.4s" fill="freeze"/><animate attributeName="opacity" from="1" to="0" begin="15.3s" dur="0.4s" fill="freeze"/></text>
+<text x="450" y="425" text-anchor="middle" fill="#3fb950" font-size="17" font-weight="600" opacity="0">1 image · 0 dépendance · 70 Mo sur disque<animate attributeName="opacity" from="0" to="1" begin="9.2s" dur="0.4s" fill="freeze"/><animate attributeName="opacity" from="1" to="0" begin="15.3s" dur="0.4s" fill="freeze"/></text>
 <circle r="7" fill="#58a6ff" opacity="0">
   <set attributeName="opacity" to="1" begin="9.4s"/><set attributeName="opacity" to="0" begin="11.6s"/>
   <animateMotion path="M160,245 L235,245" begin="9.4s" dur="0.7s" fill="freeze"/>

@@ -33,7 +33,7 @@ T = {
         ],
         "jwt": "JWT signé",
         "jwt_sub": "identité · rôles · organisation",
-        "count_b": "1 binaire · 0 dépendance · 22 Mo au repos",
+        "count_b": "1 image · 0 dépendance · 70 Mo sur disque",
     },
     "en": {
         "title_a": "Without an app-gateway: the assembled stack",
@@ -61,7 +61,7 @@ T = {
         ],
         "jwt": "signed JWT",
         "jwt_sub": "identity · roles · organisation",
-        "count_b": "1 binary · 0 dependency · 22 MB at rest",
+        "count_b": "1 image · 0 dependency · 70 MB on disk",
     },
     "es": {
         "title_a": "Sin app-gateway: la pila ensamblada",
@@ -89,7 +89,7 @@ T = {
         ],
         "jwt": "JWT firmado",
         "jwt_sub": "identidad · roles · organización",
-        "count_b": "1 binario · 0 dependencias · 22 MB en reposo",
+        "count_b": "1 imagen · 0 dependencias · 70 MB en disco",
     },
     "pt": {
         "title_a": "Sem app-gateway: a pilha montada",
@@ -117,7 +117,7 @@ T = {
         ],
         "jwt": "JWT assinado",
         "jwt_sub": "identidade · papéis · organização",
-        "count_b": "1 binário · 0 dependências · 22 MB em repouso",
+        "count_b": "1 imagem · 0 dependências · 70 MB em disco",
     },
     "de": {
         "title_a": "Ohne App-Gateway: der zusammengesetzte Stack",
@@ -145,7 +145,7 @@ T = {
         ],
         "jwt": "signiertes JWT",
         "jwt_sub": "Identität · Rollen · Organisation",
-        "count_b": "1 Binary · 0 Abhängigkeiten · 22 MB im Ruhezustand",
+        "count_b": "1 Image · 0 Abhängigkeiten · 70 MB auf der Platte",
     },
 }
 
