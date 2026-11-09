@@ -353,7 +353,7 @@ for rep in range(2):
 add(f'<g opacity="0">{appear(15.4, 0.5)}'
     f'<animateTransform attributeName="transform" type="translate" values="0 -14;0 0" dur="0.5s" begin="15.4s" fill="freeze" {SPLINE}/>'
     f'<text x="{W / 2}" y="58" text-anchor="middle" font-size="44" font-weight="800" fill="{INK}" letter-spacing="1">Meerkat</text></g>')
-add(f'<g opacity="0">{appear(15.8, 0.5)}<text x="{W - 24}" y="{H - 20}" text-anchor="end" font-size="16" font-weight="600" fill="#7a6a55" letter-spacing="1">softwarity.io</text></g>')
+add(f'<g opacity="0">{appear(15.8, 0.5)}<text x="{W - 24}" y="{H - 20}" text-anchor="end" font-size="16" font-weight="600" fill="#7a6a55" letter-spacing="1">meerkat.softwarity.dev</text></g>')
 add(f'<rect width="{W}" height="{H}" fill="#f6efe1" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="{DUR - 0.45}s" dur="0.45s" fill="freeze"/></rect>')
 add("</svg>")
 

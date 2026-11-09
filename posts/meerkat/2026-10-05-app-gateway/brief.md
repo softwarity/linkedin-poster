@@ -19,4 +19,4 @@
 
 **Image** : `image.gif` dans ce dossier, la même pour toutes les langues (aucun texte à traduire). C'est l'animation « API-GATEWAY → APP-GATEWAY » : la pile grossit autour de l'API gateway, qui l'absorbe et devient Meerkat. Le post peut y faire écho (« le I devient un P »). Description : `alt.<langue>.txt`.
 
-**Lien** : https://www.softwarity.io
+**Lien** : https://meerkat.softwarity.dev

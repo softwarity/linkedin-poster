@@ -19,7 +19,7 @@ docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwa
 
 Le port 8080 est celui de vos utilisateurs, le 9090 celui de la console. L'édition Community (softwarity/meerkat-ce) est gratuite, production comprise.
 
-https://www.softwarity.io
+https://meerkat.softwarity.dev
 
 Et vous, vous avez déjà assemblé ce genre de pile autour d'une API gateway ? C'était pénible, ou ça s'est bien passé ? Une app-gateway tout intégrée vous tenterait, ou vous préférez garder des briques séparées ?
 
