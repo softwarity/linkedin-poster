@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 # Builds meerkat-cluster.gif from the SVG. Needs Docker only.
+#   ./render.sh                square, 900x900 (LinkedIn)
+#   ./render.sh 1270 760       meerkat-cluster.1270x760.gif (Product Hunt gallery)
 set -euo pipefail
 cd "$(dirname "$0")"
+SIZE="${1:-} ${2:-}"; OUT=meerkat-cluster.gif
+[ -n "${1:-}" ] && OUT="meerkat-cluster.$1x$2.gif"
 python3 make-svg.py
 docker run --rm -v "$PWD:/work" -w /work mcr.microsoft.com/playwright:v1.61.1-noble \
-  sh -c "npm i --no-save --silent playwright@1.61.1 >/dev/null 2>&1 && node render.mjs meerkat-cluster.svg .frames"
+  sh -c "npm i --no-save --silent playwright@1.61.1 >/dev/null 2>&1 && node render.mjs meerkat-cluster.svg .frames $SIZE"
 docker run --rm -v "$PWD:/work" linuxserver/ffmpeg -loglevel error -y -framerate 12 -i /work/.frames/f%03d.png \
-  -vf "fps=12,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=none" -loop 0 /work/meerkat-cluster.gif
+  -vf "fps=12,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=none" -loop 0 /work/$OUT
 rm -rf .frames node_modules package.json package-lock.json
-echo meerkat-cluster.gif
+echo $OUT
