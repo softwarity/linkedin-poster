@@ -1,0 +1,26 @@
+API gateway, app-gateway : le I devient un P. Une seule lettre, mais une autre idée de ce qui se place devant vos services.
+
+Meerkat est une porte unique, avec son contrôle d'accès, devant les applications internes de votre entreprise. Softwarity appelle cela une app-gateway.
+
+Cas vécu : une équipe construit une application interne en microservices. Au début, une API gateway devant les services suffit. Puis il faut des pages de connexion, du SSO, un second facteur. Puis des rôles et des tenants, des règles d'accès par route, des quotas, un journal d'audit, TLS, une doc OpenAPI par service, un tunnel pour les développeurs, des tableaux de bord. La pile grossit autour de la gateway : un IAM, un proxy d'authentification, des fichiers de configuration partout, chaque brique qui envoie sa propre télémétrie. Et les écrans d'organisation, on les développe soi-même.
+
+C'est que l'API gateway a été pensée pour exposer des API à des tiers : une clé par partenaire, une facturation à l'appel.
+
+Une app-gateway part de l'autre bout : une seule porte devant une application et ses utilisateurs.
+→ les comptes, les rôles, les tenants et les pages de connexion font partie du produit, passkeys et second facteur compris
+→ comme tout passe par elle, c'est aussi la bonne place pour l'audit, les métriques et les traces
+→ vos services reçoivent des requêtes déjà authentifiées, avec l'identité en en-têtes ou dans un JWT signé : qui appelle, ses rôles, son tenant. Ils n'embarquent plus ni page de connexion, ni modèle de rôles, ni table d'utilisateurs.
+
+Une seule image, aucune dépendance : ni base de données à côté, ni cache, ni broker de messages. L'image Community pèse 70 Mo.
+
+Pour l'essayer, l'édition d'évaluation : tout Enterprise, gratuit, sans limite de durée, avec seulement une mention affichée.
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+Le port 8080 est celui de vos utilisateurs, le 9090 celui de la console. L'édition Community (softwarity/meerkat-ce) est gratuite, production comprise.
+
+https://www.softwarity.io
+
+Et vous, vous avez déjà assemblé ce genre de pile autour d'une API gateway ? C'était pénible, ou ça s'est bien passé ? Une app-gateway tout intégrée vous tenterait, ou vous préférez garder des briques séparées ?
+
+#APIGateway #Microservices #IAM #Authentication #DevOps
