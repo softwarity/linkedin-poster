@@ -1,0 +1,26 @@
+API gateway, app-gateway: the I becomes a P. A single letter, but a different idea of what sits in front of your services.
+
+Meerkat is a single door, with access control, in front of your company's internal applications. Softwarity calls this an app-gateway.
+
+A real case: a team builds an internal application as microservices. At first, an API gateway in front of the services is enough. Then come sign-in pages, SSO, a second factor. Then roles and tenants, per-route access rules, quotas, an audit trail, TLS, OpenAPI docs for each service, a tunnel for developers, dashboards. The stack grows around the gateway: an IAM, an authentication proxy, configuration files everywhere, every brick shipping its own telemetry. And the organization screens? You build those yourself.
+
+That's because the API gateway was designed to expose APIs to third parties: a key per partner, billing per call.
+
+An app-gateway starts from the other end: a single door in front of one application and its users.
+→ accounts, roles, tenants and sign-in pages are part of the product, passkeys and second factor included
+→ since everything goes through it, it's also the right place for audit, metrics and traces
+→ your services receive requests that are already authenticated, with the identity in headers or in a signed JWT: who is calling, their roles, their tenant. They no longer carry a sign-in page, a role model or a users table.
+
+One image, no dependencies: no database beside it, no cache, no message broker. The Community image weighs 70 MB.
+
+To try it, use the evaluation edition: all of Enterprise, free, with no time limit, just a notice on screen.
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+Port 8080 is for your users, 9090 for the console. The Community edition (softwarity/meerkat-ce) is free, production included.
+
+https://meerkat.softwarity.dev
+
+What about you: have you ever assembled this kind of stack around an API gateway? Was it painful, or did it go smoothly? Would an all-in-one app-gateway appeal to you, or do you prefer to keep separate bricks?
+
+#APIGateway #Microservices #IAM #Authentication #DevOps
