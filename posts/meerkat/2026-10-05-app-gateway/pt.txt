@@ -1,0 +1,26 @@
+API gateway, app-gateway: o I vira P. Uma letra só, mas uma outra ideia do que fica na frente dos seus serviços.
+
+O Meerkat é uma porta única, com controle de acesso, na frente das aplicações internas da sua empresa. A Softwarity chama isso de app-gateway.
+
+Um caso real: um time constrói uma aplicação interna em microsserviços. No começo, uma API gateway na frente dos serviços dá conta. Depois vêm as páginas de login, o SSO, o segundo fator. Depois, roles e tenants, regras de acesso por rota, cotas, um log de auditoria, TLS, uma documentação OpenAPI por serviço, um túnel para os desenvolvedores, dashboards. A stack cresce em volta da gateway: um IAM, um proxy de autenticação, arquivos de configuração por todo lado, e cada peça enviando sua própria telemetria. E as telas de gestão da organização? Essas, você mesmo desenvolve.
+
+É que a API gateway foi pensada para expor APIs a terceiros: uma chave por parceiro, cobrança por chamada.
+
+Uma app-gateway parte da outra ponta: uma única porta na frente de uma aplicação e dos seus usuários.
+→ contas, roles, tenants e páginas de login fazem parte do produto, com passkeys e segundo fator
+→ como tudo passa por ela, ela também é o lugar certo para auditoria, métricas e traces
+→ seus serviços recebem requisições já autenticadas, com a identidade em cabeçalhos ou em um JWT assinado: quem está chamando, suas roles, seu tenant. Eles não carregam mais página de login, nem modelo de roles, nem tabela de usuários.
+
+Uma única imagem, sem dependências: nada de banco de dados ao lado, nem cache, nem message broker. A imagem Community tem 70 MB.
+
+Para testar, a edição de avaliação: todo o Enterprise, gratuita, sem limite de tempo, apenas com um aviso na tela.
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+A porta 8080 é a dos seus usuários; a 9090, a do console. A edição Community (softwarity/meerkat-ce) é gratuita, inclusive em produção.
+
+https://meerkat.softwarity.dev
+
+E você, já montou esse tipo de stack em volta de uma API gateway? Foi sofrido ou correu bem? Uma app-gateway tudo-em-um te atrairia, ou você prefere manter peças separadas?
+
+#APIGateway #Microservices #IAM #Authentication #DevOps
