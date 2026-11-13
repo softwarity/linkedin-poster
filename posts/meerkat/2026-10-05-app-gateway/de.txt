@@ -1,0 +1,26 @@
+API-Gateway, App-Gateway: Aus dem I wird ein P. Nur ein Buchstabe, aber eine andere Vorstellung davon, was vor Ihren Services steht.
+
+Meerkat ist ein zentraler Zugang mit Zugriffskontrolle vor den internen Anwendungen Ihres Unternehmens. Softwarity nennt das ein App-Gateway.
+
+Ein echter Fall: Ein Team baut eine interne Anwendung aus Microservices. Am Anfang reicht ein API-Gateway vor den Services. Dann braucht es Anmeldeseiten, SSO, einen zweiten Faktor. Dann Rollen und Tenants, Zugriffsregeln pro Route, Quotas, ein Audit-Log, TLS, eine OpenAPI-Doku pro Service, einen Tunnel für die Entwickler, Dashboards. Der Stack wächst um das Gateway herum: ein IAM, ein Auth-Proxy, Konfigurationsdateien überall, und jeder Baustein sendet seine eigene Telemetrie. Und die Verwaltungsoberflächen für Organisationen? Die entwickelt man selbst.
+
+Der Grund: Das API-Gateway wurde dafür entworfen, APIs für Dritte bereitzustellen, mit einem Schlüssel pro Partner und Abrechnung pro Aufruf.
+
+Ein App-Gateway setzt am anderen Ende an: ein einziger Zugang vor einer Anwendung und ihren Nutzern.
+→ Konten, Rollen, Tenants und Anmeldeseiten gehören zum Produkt, Passkeys und zweiter Faktor inklusive
+→ Da alles darüber läuft, ist es auch der richtige Ort für Audit, Metriken und Traces
+→ Ihre Services erhalten bereits authentifizierte Requests, mit der Identität in Headern oder in einem signierten JWT: wer aufruft, mit welchen Rollen, in welchem Tenant. Sie brauchen keine Anmeldeseite, kein Rollenmodell und keine Benutzertabelle mehr.
+
+Ein einziges Image, keine Abhängigkeiten: keine Datenbank daneben, kein Cache, kein Message Broker. Das Community-Image ist 70 MB groß.
+
+Zum Ausprobieren gibt es die Evaluation-Edition: der volle Enterprise-Umfang, kostenlos, ohne zeitliche Begrenzung, nur mit einem eingeblendeten Hinweis.
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+Port 8080 ist für Ihre Nutzer, Port 9090 für die Konsole. Die Community-Edition (softwarity/meerkat-ce) ist kostenlos, auch im Produktivbetrieb.
+
+https://meerkat.softwarity.dev
+
+Und Sie: Haben Sie schon einmal so einen Stack um ein API-Gateway herum zusammengebaut? War das mühsam, oder lief es reibungslos? Würde Sie ein App-Gateway reizen, das alles integriert, oder behalten Sie lieber getrennte Bausteine?
+
+#APIGateway #Microservices #IAM #Authentication #DevOps
