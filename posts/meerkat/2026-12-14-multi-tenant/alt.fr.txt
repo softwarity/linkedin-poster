@@ -1,0 +1,1 @@
+La console d'une administratrice de tenant, Acme Corp : ses membres, leurs groupes (Finance, Front desk, Warehouse) et leur dernière connexion, sans aucun autre tenant visible.

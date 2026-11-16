@@ -1,0 +1,1 @@
+La page de connexion de Meerkat : identifiant, mot de passe, et un bouton pour se connecter avec une passkey.
