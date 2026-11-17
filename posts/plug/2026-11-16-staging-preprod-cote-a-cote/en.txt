@@ -1,0 +1,24 @@
+The bug shows up in pre-prod, not in staging. Same commit, two clusters, two behaviours. Redeploy over and over to compare? There's a simpler way.
+
+plug runs a local process as if it were inside your Docker, Compose, Swarm or Kubernetes cluster.
+
+A real case: orders misbehaves in pre-prod, while everything is fine in staging. I want the same code, on my machine, plugged into both clusters at once, to compare what it receives and what it sends back.
+
+With plug, two terminals:
+
+plug -p staging -s orders:8080:PORT npm run start:dev -- --port={PORT}
+plug -p preprod -s orders:8080:PORT npm run start:dev -- --port={PORT}
+
+Each process takes the place of orders in its own cluster and resolves that cluster's names: postgres is the staging database in the first terminal, the pre-prod one in the second. I put them side by side and compare.
+
+What I take away:
+→ PORT lets plug pick a free local port for each session and write it in place of {PORT}: the two processes don't step on each other
+→ a profile is a cluster: a plain file in ~/.plug/, selected with -p
+→ the deployed orders is set aside during the session, its environment passed on to my process; Ctrl-C, and it answers again
+
+The source code is on GitHub: https://github.com/softwarity/plug
+Docs: https://plug.softwarity.dev
+
+How do you compare the same service across two environments?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Debugging
