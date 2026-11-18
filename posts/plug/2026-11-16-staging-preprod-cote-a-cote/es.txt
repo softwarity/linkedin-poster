@@ -1,0 +1,24 @@
+El bug aparece en preproducción, no en staging. Mismo commit, dos clústeres, dos comportamientos. ¿Volver a desplegar una y otra vez para comparar? Hay una forma más sencilla.
+
+plug ejecuta un proceso local como si estuviera dentro de su clúster Docker, Compose, Swarm o Kubernetes.
+
+Un caso real: orders responde mal en preproducción, mientras que en staging todo va bien. Quiero el mismo código, en mi máquina, conectado a los dos clústeres a la vez, para comparar lo que recibe y lo que devuelve.
+
+Con plug, dos terminales:
+
+plug -p staging -s orders:8080:PORT npm run start:dev -- --port={PORT}
+plug -p preprod -s orders:8080:PORT npm run start:dev -- --port={PORT}
+
+Cada proceso ocupa el lugar de orders en su clúster y resuelve los nombres de ese clúster: postgres es la base de datos de staging en la primera terminal y la de preproducción en la segunda. Los pongo uno al lado del otro y comparo.
+
+Lo que me llevo:
+→ PORT deja que plug elija un puerto local libre para cada sesión y lo escriba en lugar de {PORT}: los dos procesos no se pisan
+→ un perfil es un clúster: un simple archivo en ~/.plug/, que se elige con -p
+→ el orders desplegado queda apartado durante la sesión, y su entorno pasa a mi proceso; Ctrl-C, y vuelve a responder
+
+El código fuente está en GitHub: https://github.com/softwarity/plug
+La documentación: https://plug.softwarity.dev
+
+Y usted, ¿cómo compara un mismo servicio en dos entornos?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Debugging
