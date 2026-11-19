@@ -1,0 +1,24 @@
+O bug aparece em pré-produção, não em staging. Mesmo commit, dois clusters, dois comportamentos. Fazer deploy de novo e de novo para comparar? Tem um jeito mais simples.
+
+O plug roda um processo local como se ele estivesse dentro do seu cluster Docker, Compose, Swarm ou Kubernetes.
+
+Caso real: o orders responde mal em pré-produção, enquanto em staging está tudo certo. Quero o mesmo código, na minha máquina, conectado aos dois clusters ao mesmo tempo, para comparar o que ele recebe e o que ele devolve.
+
+Com o plug, dois terminais:
+
+plug -p staging -s orders:8080:PORT npm run start:dev -- --port={PORT}
+plug -p preprod -s orders:8080:PORT npm run start:dev -- --port={PORT}
+
+Cada processo assume o lugar do orders no seu cluster e resolve os nomes daquele cluster: postgres é o banco de staging no primeiro terminal e o de pré-produção no segundo. Coloco os dois lado a lado e comparo.
+
+O que fica:
+→ PORT deixa o plug escolher uma porta local livre para cada sessão e colocá-la no lugar de {PORT}: um processo não atrapalha o outro
+→ um perfil é um cluster: um simples arquivo em ~/.plug/, escolhido com -p
+→ o orders implantado fica de lado durante a sessão, e o ambiente dele é passado para o meu processo; Ctrl-C, e ele volta a responder
+
+O código-fonte está no GitHub: https://github.com/softwarity/plug
+A documentação: https://plug.softwarity.dev
+
+E você, como compara um mesmo serviço em dois ambientes?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Debugging
