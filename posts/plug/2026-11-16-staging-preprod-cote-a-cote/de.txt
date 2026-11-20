@@ -1,0 +1,24 @@
+Der Bug tritt in der Pre-Prod auf, nicht im Staging. Derselbe Commit, zwei Cluster, zwei Verhaltensweisen. Zum Vergleichen immer wieder neu deployen? Es geht einfacher.
+
+plug lässt einen lokalen Prozess laufen, als befände er sich in Ihrem Docker-, Compose-, Swarm- oder Kubernetes-Cluster.
+
+Ein Fall aus der Praxis: orders antwortet in der Pre-Prod fehlerhaft, während im Staging alles funktioniert. Ich möchte denselben Code auf meinem Rechner, gleichzeitig mit beiden Clustern verbunden, um zu vergleichen, was er empfängt und was er zurückgibt.
+
+Mit plug, zwei Terminals:
+
+plug -p staging -s orders:8080:PORT npm run start:dev -- --port={PORT}
+plug -p preprod -s orders:8080:PORT npm run start:dev -- --port={PORT}
+
+Jeder Prozess übernimmt in seinem Cluster die Rolle von orders und löst die Namen dieses Clusters auf: postgres ist im ersten Terminal die Staging-Datenbank, im zweiten die der Pre-Prod. Ich lege beide nebeneinander und vergleiche.
+
+Was ich mitnehme:
+→ Mit PORT wählt plug für jede Sitzung einen freien lokalen Port und setzt ihn anstelle von {PORT} ein: Die beiden Prozesse kommen sich nicht in die Quere
+→ Ein Profil ist ein Cluster: eine einfache Datei in ~/.plug/, ausgewählt mit -p
+→ Das deployte orders wird während der Sitzung beiseitegestellt, seine Umgebung an meinen Prozess weitergegeben; Ctrl-C, und es antwortet wieder
+
+Der Quellcode ist auf GitHub: https://github.com/softwarity/plug
+Doku: https://plug.softwarity.dev
+
+Und Sie, wie vergleichen Sie denselben Service in zwei Umgebungen?
+
+#DevOps #Kubernetes #Docker #DeveloperExperience #Debugging
