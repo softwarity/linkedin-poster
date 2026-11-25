@@ -1,0 +1,1 @@
+La página de inicio de sesión de Meerkat: usuario, contraseña y un botón para iniciar sesión con una passkey.
