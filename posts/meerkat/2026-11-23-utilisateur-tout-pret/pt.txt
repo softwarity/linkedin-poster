@@ -1,0 +1,33 @@
+Seus serviços não precisam saber como o usuário fez login. Precisam saber quem ele é, e poder confiar nisso.
+
+O Meerkat é um app-gateway: uma porta única, com seu controle de acesso, na frente das aplicações internas da sua empresa.
+
+Caso real: uma aplicação interna em microsserviços. Cada serviço acaba refazendo a sua parte de identidade: uma sessão, uma checagem de papéis, às vezes uma tabela de usuários. O segundo fator é tratado em outro lugar, ou nem é tratado. E dois serviços nunca concordam sobre o que é um usuário.
+
+Com o Meerkat, tudo isso é feito uma vez só, na porta, nas páginas de login do gateway, com as cores da sua marca:
+→ contas locais, OpenID Connect ou GitHub
+→ segundo fator TOTP, com códigos de backup e navegadores confiáveis
+→ passkeys como primeiro fator, sem usuário nem senha
+→ com vários tenants, a pessoa escolhe o seu no login
+
+Depois, cada serviço recebe um JWT assinado em Authorization: Bearer. Qualquer Authorization enviado pelo cliente é removido antes: ninguém consegue forjar um. O token traz a conta (sub), mais o que a rota escolheu enviar: nome de usuário, e-mail, papéis, tenant. Ele vale por dois minutos por padrão.
+
+Para validá-lo, o serviço não precisa de nenhum segredo, de nenhuma tabela de contas, nem de nenhuma chamada de volta ao gateway. Basta um endereço, no plano interno:
+
+http://meerkat:7070/.well-known/openid-configuration
+
+As bibliotecas mais comuns usam esse endereço direto: MetadataAddress no .NET, openid-client no Node, issuer-uri no Spring com o emissor que esse documento informa. Uma rotação de chaves chega até elas sozinha.
+
+Variante sem código: a rota pode enviar a mesma identidade em cabeçalhos, para uma aplicação que já sabe ler um cabeçalho de usuário.
+
+Resultado: seus serviços não carregam mais página de login, nem modelo de papéis, nem tabela de usuários. Eles leem quem está chamando, seus papéis e seu tenant como um fato, e não como um parâmetro escolhido por quem chama.
+
+Tudo isso está na edição Community, gratuita, inclusive em produção, exceto os múltiplos tenants e SAML, LDAP ou Active Directory, que são da Enterprise. Para testar, a edição de avaliação:
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+https://meerkat.softwarity.dev
+
+Nos seus serviços, quem valida a identidade hoje? Cada serviço do seu jeito, uma biblioteca comum ou o gateway?
+
+#Microservices #Authentication #JWT #APIGateway #DevOps
