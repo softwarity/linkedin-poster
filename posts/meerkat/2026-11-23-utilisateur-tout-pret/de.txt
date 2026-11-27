@@ -1,0 +1,33 @@
+Ihre Services müssen nicht wissen, wie sich ein Nutzer angemeldet hat. Sie müssen wissen, wer er ist, und sich darauf verlassen können.
+
+Meerkat ist ein App-Gateway: ein zentraler Zugang mit Zugriffskontrolle vor den internen Anwendungen Ihres Unternehmens.
+
+Ein echter Fall: eine interne Anwendung aus Microservices. Jeder Service baut am Ende sein eigenes Stück Identität nach: eine Session, eine Rollenprüfung, manchmal eine Benutzertabelle. Der zweite Faktor wird woanders erledigt, oder gar nicht. Und keine zwei Services sind sich je einig, was ein Nutzer eigentlich ist.
+
+Mit Meerkat passiert all das genau einmal, am Eingang, auf den Anmeldeseiten des Gateways, in Ihren Farben:
+→ lokale Konten, OpenID Connect oder GitHub
+→ zweiter Faktor per TOTP, mit Backup-Codes und vertrauenswürdigen Browsern
+→ Passkeys als erster Faktor, ganz ohne Benutzername und Passwort
+→ bei mehreren Tenants wählt die Person ihren Tenant bei der Anmeldung
+
+Danach erhält jeder Service ein signiertes JWT in Authorization: Bearer. Ein vom Client gesendeter Authorization-Header wird vorher entfernt: Niemand kann so ein Token fälschen. Das Token enthält das Konto (sub) und dazu, was die Route übermitteln soll: Benutzername, E-Mail, Rollen, Tenant. Standardmäßig ist es zwei Minuten gültig.
+
+Um es zu prüfen, braucht der Service kein Secret, keine Kontentabelle und keinen Rückruf an das Gateway. Nur eine einzige Adresse, auf der internen Ebene:
+
+http://meerkat:7070/.well-known/openid-configuration
+
+Gängige Bibliotheken nutzen sie direkt: MetadataAddress in .NET, openid-client in Node, issuer-uri in Spring mit dem Issuer, den dieses Dokument angibt. Eine Schlüsselrotation erreicht sie ganz von selbst.
+
+Die Variante ohne Code: Die Route kann dieselbe Identität als Header senden, für eine Anwendung, die bereits einen Benutzer-Header auswertet.
+
+Das Ergebnis: Ihre Services brauchen keine Anmeldeseite, kein Rollenmodell und keine Benutzertabelle mehr. Sie lesen, wer aufruft, mit welchen Rollen und in welchem Tenant, als Tatsache und nicht als Parameter, den der Aufrufer selbst wählt.
+
+All das ist in der Community-Edition enthalten, kostenlos, auch im Produktivbetrieb. Ausnahmen sind mehrere Tenants sowie SAML, LDAP oder Active Directory: Sie gehören zur Enterprise-Edition. Zum Ausprobieren gibt es die Evaluation-Edition:
+
+docker run -p 8080:8080 -p 9090:9090 -e MEERKAT_ADMIN_PASSWORD=choose-one softwarity/meerkat
+
+https://meerkat.softwarity.dev
+
+Und bei Ihnen: Wer prüft heute die Identität in Ihren Services? Jeder Service auf seine Weise, eine gemeinsame Bibliothek oder das Gateway?
+
+#Microservices #Authentication #JWT #APIGateway #DevOps
